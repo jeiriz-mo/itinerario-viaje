@@ -332,33 +332,59 @@
             const apiKey = localStorage.getItem('gemini_api_key_viaje');
             if (!apiKey) return null;
             
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+            // Arreglo definitivo para evitar el error 404: 
+            // Lista de modelos de respaldo. Si uno falla, pasa al siguiente.
+            const models = [
+                'gemini-2.5-flash-preview-09-2025', // Soporte para el entorno del Canvas
+                'gemini-1.5-flash',                 // Soporte estándar público
+                'gemini-1.5-flash-latest',          // Soporte para claves que requieran 'latest'
+                'gemini-pro'                        // Respaldo universal garantizado
+            ];
+            
             const payload = { contents: [{ parts: [{ text: promptText }] }] };
 
-            const fetchWithRetry = async (url, options, retries = 5, delay = 1000) => {
+            for (let model of models) {
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+                
+                let retries = 3;
+                let delay = 1000;
+                let modelFailed = false;
+
                 for (let i = 0; i < retries; i++) {
                     try {
-                        const response = await fetch(url, options);
-                        if (response.ok) return await response.json();
+                        const response = await fetch(url, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
+                        });
+                        
+                        if (response.ok) {
+                            const data = await response.json();
+                            return data?.candidates?.[0]?.content?.parts?.[0]?.text || null;
+                        }
+                        
+                        // Si el modelo da un error de que no existe (404), saltar al siguiente de la lista
+                        if (response.status === 404) {
+                            console.warn(`El modelo ${model} retornó 404. Pasando al siguiente modelo disponible...`);
+                            modelFailed = true;
+                            break; 
+                        }
+
+                        // Si la clave es inválida o no tiene permisos
+                        if (response.status === 400 || response.status === 403) {
+                            console.error(`Error ${response.status}: API Key inválida o sin permisos suficientes.`);
+                            return null;
+                        }
                     } catch (err) {
-                        if (i === retries - 1) throw err;
+                        if (i === retries - 1) console.error("Error de conexión con la IA:", err);
                     }
+                    
+                    if (modelFailed) break; // Sale del loop de reintentos y pasa al siguiente modelo
                     await new Promise(res => setTimeout(res, delay));
                     delay *= 2;
                 }
-            };
-
-            try {
-                const data = await fetchWithRetry(url, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                return data?.candidates?.[0]?.content?.parts?.[0]?.text || null;
-            } catch (e) {
-                console.error("AI Error:", e);
-                return null;
             }
+            return "Hubo un error de conexión con la IA después de varios intentos. Verifica tu API Key.";
         }
 
         async function getAITips(id) {
@@ -371,12 +397,13 @@
             const prompt = `Conserje de Florida. Actividad: ${act.priority} en ${act.city}. Dame 1 restaurante cercano y un tip secreto. 2 frases max. HTML simple.`;
             const result = await fetchGemini(prompt);
             
-            if (result) {
+            if (result && !result.includes("Hubo un error")) {
                 resDiv.innerHTML = `<div class="mt-4 p-4 bg-slate-100 border-l-4 border-blue-500 rounded-r-xl text-sm ai-response">${result.replace(/```html|```/g, '')}</div>`;
                 btn.style.display = 'none';
             } else {
                 btn.innerHTML = "⚠️ Reintentar";
                 btn.disabled = false;
+                if(result) alert(result);
             }
         }
 
@@ -387,7 +414,6 @@
             const ctx = person === 'juan' ? "Hombre comprando pedales de guitarra y equipo de moto." : "Mujer comprando Stanley y ropa de lujo.";
             const res = await fetchGemini(`3 frases en inglés para pedir ayuda sobre ${ctx}. Incluye traducción. HTML lista.`);
             if (res) resDiv.innerHTML = res.replace(/```html|```/g, '');
-            else resDiv.innerHTML = "Hubo un error de conexión, intenta de nuevo.";
         }
 
         function switchTab(id) {
@@ -502,10 +528,115 @@
         function configurarAPI() {
             const k = prompt("Gemini API Key:", localStorage.getItem('gemini_api_key_viaje') || "");
             if (k !== null) {
+                localStorage.removeItem('gemini_working_model'); // Limpiar modelo cacheado al cambiar la clave
                 if(k.trim() === "") localStorage.removeItem('gemini_api_key_viaje');
                 else localStorage.setItem('gemini_api_key_viaje', k.trim());
                 location.reload();
             }
+        }
+
+        async function fetchGemini(promptText) {
+            const apiKey = localStorage.getItem('gemini_api_key_viaje');
+            if (!apiKey) return null;
+            
+            let modelToUse = localStorage.getItem('gemini_working_model');
+            
+            // 1. AUTO-DESCUBRIMIENTO (GET): Buscar modelos disponibles para esta API Key
+            if (!modelToUse) {
+                try {
+                    const listUrl = `https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`;
+                    const listRes = await fetch(listUrl);
+                    if (listRes.ok) {
+                        const data = await listRes.json();
+                        // Filtrar modelos que soporten generación de texto
+                        const validModels = data.models.filter(m => 
+                            m.supportedGenerationMethods && 
+                            m.supportedGenerationMethods.includes("generateContent") &&
+                            m.name.includes("gemini")
+                        );
+                        
+                        // Prioridades de modelos a elegir
+                        const prefs = ['gemini-2.5-flash', 'gemini-1.5-flash', 'gemini-pro'];
+                        for (let p of prefs) {
+                            let found = validModels.find(m => m.name.includes(p));
+                            if (found) {
+                                modelToUse = found.name.split('models/')[1];
+                                break;
+                            }
+                        }
+                        // Si no encuentra los preferidos, usa el primero disponible que sirva
+                        if (!modelToUse && validModels.length > 0) {
+                            modelToUse = validModels[0].name.split('models/')[1];
+                        }
+                        
+                        if (modelToUse) {
+                            localStorage.setItem('gemini_working_model', modelToUse);
+                            console.log("Modelo descubierto por API (GET):", modelToUse);
+                        }
+                    }
+                } catch(e) {
+                    console.error("Error en auto-descubrimiento GET:", e);
+                }
+            }
+
+            // 2. FALLBACKS DE SEGURIDAD (Si el GET falla o el modelo guardado da error)
+            const fallbackModels = [
+                'gemini-2.5-flash',
+                'gemini-1.5-flash',
+                'gemini-1.5-flash-latest',
+                'gemini-pro'
+            ];
+            
+            // Insertar el modelo dinámico al principio de la fila si existe
+            const models = modelToUse ? [modelToUse, ...fallbackModels.filter(m => m !== modelToUse)] : fallbackModels;
+            
+            const payload = { contents: [{ parts: [{ text: promptText }] }] };
+
+            for (let model of models) {
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+                
+                let retries = 3;
+                let delay = 1000;
+                let modelFailed = false;
+
+                for (let i = 0; i < retries; i++) {
+                    try {
+                        const response = await fetch(url, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
+                        });
+                        
+                        if (response.ok) {
+                            const data = await response.json();
+                            // Guardar este modelo como el "ganador" para futuras llamadas y no volver a iterar
+                            localStorage.setItem('gemini_working_model', model);
+                            return data?.candidates?.[0]?.content?.parts?.[0]?.text || null;
+                        }
+                        
+                        if (response.status === 404) {
+                            console.warn(`El modelo ${model} retornó 404. Saltando al siguiente de la lista de respaldo...`);
+                            if (model === localStorage.getItem('gemini_working_model')) {
+                                localStorage.removeItem('gemini_working_model');
+                            }
+                            modelFailed = true;
+                            break; 
+                        }
+
+                        if (response.status === 400 || response.status === 403) {
+                            console.error(`Error ${response.status}: API Key inválida o sin permisos.`);
+                            return "Error: Tu API Key es inválida o no tiene permisos.";
+                        }
+                    } catch (err) {
+                        if (i === retries - 1) console.error("Error de conexión IA:", err);
+                    }
+                    
+                    if (modelFailed) break; // Sale del loop de reintentos de ESTE modelo y prueba el siguiente
+                    await new Promise(res => setTimeout(res, delay));
+                    delay *= 2;
+                }
+            }
+            return "Hubo un error de conexión. No se encontró un modelo compatible habilitado para tu API Key.";
         }
 
         window.onload = () => {
