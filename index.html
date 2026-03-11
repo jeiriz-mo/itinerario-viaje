@@ -96,7 +96,10 @@
         <!-- Navegación de Pestañas (Pills) -->
         <div class="max-w-6xl mx-auto px-4 py-2">
             <nav class="flex space-x-2 overflow-x-auto pb-1" aria-label="Tabs" id="nav-tabs">
-                <button onclick="switchTab('itinerario')" id="btn-tab-itinerario" class="tab-btn bg-slate-800 text-white shadow-md rounded-full px-5 py-2.5 text-sm font-semibold transition-all flex items-center gap-2 whitespace-nowrap active:scale-95">
+                <button onclick="switchTab('todo')" id="btn-tab-todo" class="tab-btn bg-slate-800 text-white shadow-md rounded-full px-5 py-2.5 text-sm font-semibold transition-all flex items-center gap-2 whitespace-nowrap active:scale-95">
+                    <span>🌟</span> Todo
+                </button>
+                <button onclick="switchTab('itinerario')" id="btn-tab-itinerario" class="tab-btn bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 hover:text-slate-900 rounded-full px-5 py-2.5 text-sm font-medium transition-all flex items-center gap-2 whitespace-nowrap active:scale-95">
                     <span>📅</span> Itinerario
                 </button>
                 <button onclick="switchTab('equipaje')" id="btn-tab-equipaje" class="tab-btn bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 hover:text-slate-900 rounded-full px-5 py-2.5 text-sm font-medium transition-all flex items-center gap-2 whitespace-nowrap active:scale-95">
@@ -469,32 +472,40 @@
             // SOLUCION DEFINITIVA SCROLL: Instanteo al top antes de tocar el DOM
             window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
 
-            // Resetear todos los tabs a oculto
-            document.querySelectorAll('.tab-content').forEach(t => {
-                t.style.display = 'none';
-                t.classList.remove('active');
-            });
-            
             // Estilos de botones (Pills inactivos)
             document.querySelectorAll('.tab-btn').forEach(b => {
                 b.classList.remove('bg-slate-800', 'text-white', 'shadow-md');
                 b.classList.add('bg-white', 'text-slate-600');
             });
             
-            // Activar nuevo tab
-            const activeTab = document.getElementById(`tab-${id}`);
-            activeTab.style.display = 'flex';
-            
-            // Forzar reflow para la animación
-            void activeTab.offsetWidth; 
-            activeTab.classList.add('active');
+            if (id === 'todo') {
+                // Mostrar todas las secciones
+                document.querySelectorAll('.tab-content').forEach(t => {
+                    t.style.display = 'flex';
+                    t.classList.add('active');
+                });
+            } else {
+                // Resetear todos los tabs a oculto
+                document.querySelectorAll('.tab-content').forEach(t => {
+                    t.style.display = 'none';
+                    t.classList.remove('active');
+                });
+                
+                // Activar solo el tab seleccionado
+                const activeTab = document.getElementById(`tab-${id}`);
+                activeTab.style.display = 'flex';
+                
+                // Forzar reflow para la animación
+                void activeTab.offsetWidth; 
+                activeTab.classList.add('active');
+            }
             
             // Botón activo
             const activeBtn = document.getElementById(`btn-tab-${id}`);
             activeBtn.classList.remove('bg-white', 'text-slate-600');
             activeBtn.classList.add('bg-slate-800', 'text-white', 'shadow-md');
             
-            if (id === 'itinerario') window.dispatchEvent(new Event('resize'));
+            if (id === 'itinerario' || id === 'todo') window.dispatchEvent(new Event('resize'));
         }
 
         function renderItinerary(f = "all") {
@@ -582,6 +593,8 @@
             
             if (now < start) {
                 const diff = Math.ceil((start - now) / (86400000));
+                banner.classList.remove('text-white');
+                banner.classList.add('text-slate-900');
                 banner.innerText = `⏳ ¡Faltan ${diff} días para el viaje! Preparen las valijas.`;
             } else if (now >= start && now <= end) {
                 // CORRECCIÓN 2: Prevención del error de Zona Horaria que mostraba el día anterior en zonas UTC positivas
