@@ -4,20 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Florida Roadtrip 2026</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
+    <!-- A configuração do Tailwind deve SEMPRE vir antes da importação do script do CDN -->
     <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: { sans: ['Inter', 'sans-serif'] },
-                    colors: { brand: { 50: '#eff6ff', 100: '#dbeafe', 500: '#3b82f6', 600: '#2563eb', 900: '#1e3a8a' } }
+        tailwind = {
+            config: {
+                theme: {
+                    extend: {
+                        fontFamily: { sans: ['Inter', 'sans-serif'] },
+                        colors: { brand: { 50: '#eff6ff', 100: '#dbeafe', 500: '#3b82f6', 600: '#2563eb', 900: '#1e3a8a' } }
+                    }
                 }
             }
         }
     </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
     <style>
         body {
             background-color: #f4f7f9;
@@ -195,10 +199,10 @@
                             <span class="bg-pink-100 p-2 rounded-lg text-xl shadow-sm">💄</span> Mujeres
                         </h3>
                         <ul class="text-sm text-slate-700 space-y-4 font-medium">
-                            <li class="flex items-start gap-3"><span class="text-green-500 text-lg">✓</span> <span>Ropa liviana para los primeros 4 días.</span></li>
-                            <li class="flex items-start gap-3"><span class="text-green-500 text-lg">✓</span> <span>1 abrigo ligero para la noche/aire acondicionado.</span></li>
+                            <li class="flex items-start gap-3"><span class="text-green-500 text-lg">✓</span> <span>Ropa liviana para los primeiros 4 días.</span></li>
+                            <li class="flex items-start gap-3"><span class="text-green-500 text-lg">✓</span> <span>1 abrigo leve para a noite/ar condicionado.</span></li>
                             <li class="flex items-start gap-3"><span class="text-green-500 text-lg">✓</span> <span>Zapatillas "rotas" (cómodas para parque) + sandalias.</span></li>
-                            <li class="flex items-start gap-3 bg-red-50 p-3 rounded-xl border border-red-100"><span class="text-red-500 text-lg">⚠</span> <span class="text-red-900">Dejar EXTREMO espacio vacío en valija para ropa, Stanley y maquillaje.</span></li>
+                            <li class="flex items-start gap-3 bg-red-50 p-3 rounded-xl border border-red-100"><span class="text-red-500 text-lg">⚠</span> <span class="text-red-900">Deixar EXTREMO espaço vazio na mala para roupas, Stanley e maquiagem.</span></li>
                         </ul>
                     </div>
                 </div>
@@ -213,15 +217,15 @@
                     <svg width="200" height="200" viewBox="0 0 24 24" fill="currentColor"><path d="M16 6V4C16 2.89543 15.1046 2 14 2H10C8.89543 2 8 2.89543 8 4V6H3C2.44772 6 2 6.44772 2 7V20C2 21.1046 2.89543 22 4 22H20C21.1046 22 22 21.1046 22 20V7C22 6.44772 21.5523 6 21 6H16ZM10 4H14V6H10V4ZM4 8H20V20H4V8Z"></path></svg>
                 </div>
                 <div class="relative z-10">
-                    <h2 class="text-2xl font-extrabold flex items-center gap-2">🛒 Misión de Compras</h2>
-                    <p class="text-slate-300 text-sm mt-2 max-w-md leading-relaxed">Listas exactas de la misión. Utilizá la Inteligencia Artificial para generar frases en inglés nativo antes de entrar a las tiendas.</p>
+                    <h2 class="text-2xl font-extrabold flex items-center gap-2">🛒 Missão de Compras</h2>
+                    <p class="text-slate-300 text-sm mt-2 max-w-md leading-relaxed">Listas exatas da missão. Utilize a Inteligência Artificial para gerar frases em inglês nativo antes de entrar nas lojas.</p>
                 </div>
                 <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto relative z-10">
                     <button onclick="getAIShoppingPhrases('juan')" class="group flex-1 bg-orange-500 hover:bg-orange-400 text-white px-4 py-3 rounded-xl text-sm font-bold transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 flex justify-center items-center gap-2">
-                        <span>🎸</span> Frases Inglés (Hombres)
+                        <span>🎸</span> Frases Inglês (Homens)
                     </button>
                     <button onclick="getAIShoppingPhrases('sofi')" class="group flex-1 bg-pink-500 hover:bg-pink-400 text-white px-4 py-3 rounded-xl text-sm font-bold transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 flex justify-center items-center gap-2">
-                        <span>💄</span> Frases Inglés (Mujeres)
+                        <span>💄</span> Frases Inglês (Mulheres)
                     </button>
                 </div>
             </div>
@@ -234,6 +238,7 @@
                 <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 relative group hover:border-orange-200 transition-colors">
                     <h3 class="font-bold text-lg border-b border-slate-100 pb-3 mb-4 flex justify-between items-center">
                         <span class="text-slate-800">🎸 Juan</span>
+                        <!-- CORREÇÃO 1: Prefixo exato com hífen no onclick seletor para não conflitar com Julian -->
                         <button onclick="limpiarListas('j')" class="opacity-0 group-hover:opacity-100 text-[10px] uppercase font-bold text-slate-400 hover:text-red-500 transition-all bg-slate-50 px-2 py-1 rounded">Reset</button>
                     </h3>
                     <div class="space-y-1 text-sm font-medium" id="checklist-juan">
@@ -283,9 +288,9 @@
             <div class="bg-yellow-50 border border-yellow-200 rounded-3xl p-6 shadow-sm">
                 <h3 class="font-extrabold text-yellow-900 text-sm flex items-center gap-2 uppercase tracking-wide">
                     <svg class="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    Tip Investigativo: Compras de Nicho
+                    Dica Investigativa: Compras de Nicho
                 </h3>
-                <p class="text-sm text-yellow-800 mt-2 leading-relaxed">Algunos pedales boutique y <strong>filamentos 3D específicos</strong> a veces no tienen stock físico asegurado. Es recomendable comprar por Amazon EE.UU. 2 semanas antes del viaje y enviar todo a un <strong>Amazon Locker</strong> cercano y gratuito para asegurar la misión.</p>
+                <p class="text-sm text-yellow-800 mt-2 leading-relaxed">Alguns pedais boutique e <strong>filamentos 3D específicos</strong> às vezes não têm estoque físico garantido. É recomendável comprar pela Amazon dos EUA 2 semanas antes da viagem e enviar tudo para um <strong>Amazon Locker</strong> próximo e gratuito para garantir a missão.</p>
             </div>
 
             <!-- Rankings -->
@@ -300,21 +305,21 @@
                         <div>
                             <h4 class="font-bold text-sm text-slate-800 border-b border-slate-100 pb-2 mb-3 uppercase tracking-wider">🍻 Bares (Blues & Rock)</h4>
                             <ul class="text-xs text-slate-600 space-y-4">
-                                <li class="flex gap-3"><span class="text-xl">🥇</span><div><strong class="text-slate-900 text-sm">Tanqueray's Bar</strong> (Downtown, 30km)<br>El mejor costo/beneficio. Sótano histórico con jams de blues local.</div></li>
-                                <li class="flex gap-3"><span class="text-xl">🏆</span><div><strong class="text-slate-900 text-sm">Hard Rock Cafe</strong> (CityWalk, 18km)<br>Imprescindible. El más grande del mundo, funciona como museo.</div></li>
+                                <li class="flex gap-3"><span class="text-xl">🥇</span><div><strong class="text-slate-900 text-sm">Tanqueray's Bar</strong> (Downtown, 30km)<br>O melhor custo/benefício. Porão histórico com jams de blues local.</div></li>
+                                <li class="flex gap-3"><span class="text-xl">🏆</span><div><strong class="text-slate-900 text-sm">Hard Rock Cafe</strong> (CityWalk, 18km)<br>Imprescindível. O maior do mundo, funciona como museu.</div></li>
                             </ul>
                         </div>
                         <div>
                             <h4 class="font-bold text-sm text-slate-800 border-b border-slate-100 pb-2 mb-3 uppercase tracking-wider">🎸 Música & Motos</h4>
                             <ul class="text-xs text-slate-600 space-y-4">
-                                <li class="flex gap-3"><span class="text-xl">🥇</span><div><strong class="text-slate-900 text-sm">Guitar Center & La Familia Pawn</strong> (OBT, 15km)<br>Para probar equipo nuevo y cazar gangas en empeños en la misma ruta.</div></li>
-                                <li class="flex gap-3"><span class="text-xl">🏆</span><div><strong class="text-slate-900 text-sm">Orlando Harley & Harbor Freight</strong> (20km / 8km)<br>Fábrica histórica de Harley y paraíso de herramientas baratas.</div></li>
+                                <li class="flex gap-3"><span class="text-xl">🥇</span><div><strong class="text-slate-900 text-sm">Guitar Center & La Familia Pawn</strong> (OBT, 15km)<br>Para testar equipamento novo e caçar pechinchas em lojas de penhores na mesma rota.</div></li>
+                                <li class="flex gap-3"><span class="text-xl">🏆</span><div><strong class="text-slate-900 text-sm">Orlando Harley & Harbor Freight</strong> (20km / 8km)<br>Fábrica histórica da Harley e paraíso de ferramentas baratas.</div></li>
                             </ul>
                         </div>
                         <div>
-                            <h4 class="font-bold text-sm text-slate-800 border-b border-slate-100 pb-2 mb-3 uppercase tracking-wider">💄 Moda & General</h4>
+                            <h4 class="font-bold text-sm text-slate-800 border-b border-slate-100 pb-2 mb-3 uppercase tracking-wider">💄 Moda & Geral</h4>
                             <ul class="text-xs text-slate-600 space-y-4">
-                                <li class="flex gap-3"><span class="text-xl">🥇</span><div><strong class="text-slate-900 text-sm">Florida Mall & Premium Outlets</strong> (10km / 5km)<br>Dick's (Stanley), Primark (Ropa barata) y Outlets para lujo/maquillaje.</div></li>
+                                <li class="flex gap-3"><span class="text-xl">🥇</span><div><strong class="text-slate-900 text-sm">Florida Mall & Premium Outlets</strong> (10km / 5km)<br>Dick's (Stanley), Primark (Roupa barata) e Outlets para luxo/maquiagem.</div></li>
                             </ul>
                         </div>
                     </div>
@@ -328,22 +333,22 @@
                     </div>
                     <div class="p-5 space-y-6">
                         <div>
-                            <h4 class="font-bold text-sm text-slate-800 border-b border-slate-100 pb-2 mb-3 uppercase tracking-wider">🛍️ El Gigante</h4>
+                            <h4 class="font-bold text-sm text-slate-800 border-b border-slate-100 pb-2 mb-3 uppercase tracking-wider">🛍️ O Gigante</h4>
                             <ul class="text-xs text-slate-600 space-y-4">
-                                <li class="flex gap-3"><span class="text-xl">🏆</span><div><strong class="text-slate-900 text-sm">Sawgrass Mills</strong> (Sunrise, 35km)<br>IMPRESCINDIBLE. El outlet más grande de EE.UU. Resuelve todo el viaje en un día.</div></li>
+                                <li class="flex gap-3"><span class="text-xl">🏆</span><div><strong class="text-slate-900 text-sm">Sawgrass Mills</strong> (Sunrise, 35km)<br>IMPRESCINDÍVEL. O maior outlet dos EUA. Resolve toda a viagem em um dia.</div></li>
                             </ul>
                         </div>
                         <div>
-                            <h4 class="font-bold text-sm text-purple-800 border-b border-purple-100 pb-2 mb-3 uppercase tracking-wider">🖨️ Tecnología 3D</h4>
+                            <h4 class="font-bold text-sm text-purple-800 border-b border-purple-100 pb-2 mb-3 uppercase tracking-wider">🖨️ Tecnologia 3D</h4>
                             <ul class="text-xs text-slate-600 space-y-4">
-                                <li class="flex gap-3"><span class="text-xl">🚀</span><div><strong class="text-slate-900 text-sm">Micro Center</strong> (Miami, 35km)<br>EL PARAÍSO. La mejor tienda de tecnología de USA. Tienen pasillos enteros de Impresoras 3D, repuestos y paredes de filamentos.</div></li>
+                                <li class="flex gap-3"><span class="text-xl">🚀</span><div><strong class="text-slate-900 text-sm">Micro Center</strong> (Miami, 35km)<br>O PARAÍSO. A melhor loja de tecnologia dos EUA. Têm corredores inteiros de Impressoras 3D, peças e paredes de filamentos.</div></li>
                             </ul>
                         </div>
                         <div>
-                            <h4 class="font-bold text-sm text-slate-800 border-b border-slate-100 pb-2 mb-3 uppercase tracking-wider">🍻 Paseos & Biker</h4>
+                            <h4 class="font-bold text-sm text-slate-800 border-b border-slate-100 pb-2 mb-3 uppercase tracking-wider">🍻 Passeios & Biker</h4>
                             <ul class="text-xs text-slate-600 space-y-4">
-                                <li class="flex gap-3"><span class="text-xl">🎸</span><div><strong class="text-slate-900 text-sm">Hollywood Broadwalk & Hard Rock</strong> (8km / 20km)<br>Música clásica gratis frente al mar y el asombroso Guitar Hotel.</div></li>
-                                <li class="flex gap-3"><span class="text-xl">🏍️</span><div><strong class="text-slate-900 text-sm">Peterson's Harley-Davidson</strong> (12km)<br>Concesionario histórico ideal para la remera de recuerdo de Miami.</div></li>
+                                <li class="flex gap-3"><span class="text-xl">🎸</span><div><strong class="text-slate-900 text-sm">Hollywood Broadwalk & Hard Rock</strong> (8km / 20km)<br>Música clássica grátis de frente para o mar e o assombroso Guitar Hotel.</div></li>
+                                <li class="flex gap-3"><span class="text-xl">🏍️</span><div><strong class="text-slate-900 text-sm">Peterson's Harley-Davidson</strong> (12km)<br>Concessionária histórica ideal para a camiseta de lembrança de Miami.</div></li>
                             </ul>
                         </div>
                     </div>
@@ -354,7 +359,7 @@
 
     <footer class="bg-slate-900 text-slate-400 py-8 text-center text-sm mt-auto">
         <div class="max-w-6xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4">
-            <p class="font-medium tracking-wide">Viaje Florida 2026</p>
+            <p class="font-medium tracking-wide">Viagem Florida 2026</p>
             <button onclick="configurarAPI()" class="text-xs font-medium text-slate-300 bg-slate-800 border border-slate-700 px-4 py-2 rounded-full hover:bg-slate-700 hover:text-white transition-all shadow-sm">⚙️ Configurar API Key (Gemini IA)</button>
         </div>
     </footer>
@@ -417,13 +422,13 @@
                             if (model === localStorage.getItem('gemini_working_model')) localStorage.removeItem('gemini_working_model');
                             modelFailed = true; break; 
                         }
-                        if (response.status === 400 || response.status === 403) return "Error: Tu API Key es inválida o no tiene permisos.";
-                    } catch (err) { if (i === retries - 1) console.error("Error de conexión IA:", err); }
+                        if (response.status === 400 || response.status === 403) return "Erro: Sua API Key é inválida ou não tem permissões.";
+                    } catch (err) { if (i === retries - 1) console.error("Erro de conexão IA:", err); }
                     if (modelFailed) break; 
                     await new Promise(res => setTimeout(res, delay)); delay *= 2;
                 }
             }
-            return "Hubo un error de conexión. Verifica tu conexión a internet o la API Key.";
+            return "Houve um erro de conexão. Verifique sua conexão com a internet ou a API Key.";
         }
 
         async function getAITips(id) {
@@ -437,18 +442,18 @@
             Tarea: 1. Recomienda 1 lugar muy específico para comer cerca de esta actividad. 2. Dame 1 tip "secreto" de experto (estacionamiento, horarios). Formato: Directo. Tono amistoso. Máx 4 oraciones. HTML simple (<b>, <br>). No markdown.`;
 
             const result = await fetchGemini(prompt);
-            if (result && !result.includes("Hubo un error")) {
-                resDiv.innerHTML = `<div class="mt-4 p-5 bg-blue-50/80 backdrop-blur-sm border border-blue-100 rounded-2xl text-sm ai-response shadow-sm"><p class="font-extrabold text-blue-900 mb-2 flex items-center gap-2"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2a2 2 0 012 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 017 7h1v2h-1v2a2 2 0 01-2 2H5a2 2 0 01-2-2v-2H2v-2h1a7 7 0 017-7h1V5.73A2 2 0 0110 4a2 2 0 012-2zm-3 8a2 2 0 100 4 2 2 0 000-4zm6 0a2 2 0 100 4 2 2 0 000-4z"/></svg> Conserje IA:</p><div class="text-slate-700 leading-relaxed">${result.replace(/```html|```/g, '')}</div></div>`;
+            if (result && !result.includes("erro de conexão") && !result.includes("Erro:")) {
+                resDiv.innerHTML = `<div class="mt-4 p-5 bg-blue-50/80 backdrop-blur-sm border border-blue-100 rounded-2xl text-sm ai-response shadow-sm"><p class="font-extrabold text-blue-900 mb-2 flex items-center gap-2"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2a2 2 0 012 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 017 7h1v2h-1v2a2 2 0 01-2 2H5a2 2 0 01-2-2v-2H2v-2h1a7 7 0 017-7h1V5.73A2 2 0 0110 4a2 2 0 012-2zm-3 8a2 2 0 100 4 2 2 0 000-4zm6 0a2 2 0 100 4 2 2 0 000-4z"/></svg> Concierge IA:</p><div class="text-slate-700 leading-relaxed">${result.replace(/```html|```/g, '')}</div></div>`;
                 btn.style.display = 'none';
             } else {
-                btn.innerHTML = "⚠️ Reintentar IA"; btn.disabled = false;
+                btn.innerHTML = "⚠️ Tentar IA de novo"; btn.disabled = false;
                 if(result) alert(result);
             }
         }
 
         async function getAIShoppingPhrases(person) {
             const resDiv = document.getElementById('ai-shopping-result');
-            resDiv.innerHTML = "<div class='flex items-center gap-3'><div class='ai-spinner'></div> <span class='text-slate-500 font-medium'>Generando frases nativas...</span></div>";
+            resDiv.innerHTML = "<div class='flex items-center gap-3'><div class='ai-spinner'></div> <span class='text-slate-500 font-medium'>Gerando frases nativas...</span></div>";
             resDiv.classList.remove('hidden');
             
             const ctx = person === 'juan' ? "Hombre argentino comprando pedales boutique (Strymon), y accesorios moto (Harbor Freight)." : "Mujer argentina buscando insumos impresora 3D (Creality), termos Stanley en Dick's, y ropa en Aventura Mall.";
@@ -456,7 +461,7 @@
             Tarea: 1. Genera 3 frases en inglés (naturales, nativas) para que el usuario pregunte a un empleado por sus artículos específicos y pida chequear stock. 2. Traducción al español abajo. 3. Añade 1 consejo súper breve de cultura de compras en USA sobre stock oculto o clearances. Formato: HTML simple (<ul>, <li>, <b>). No markdown.`;
 
             const res = await fetchGemini(prompt);
-            if (res) resDiv.innerHTML = `<p class="font-extrabold text-purple-900 mb-4 flex items-center gap-2"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg> Asistente de Compras Inteligente:</p><div class="text-slate-700 space-y-2 leading-relaxed">${res.replace(/```html|```/g, '')}</div>`;
+            if (res) resDiv.innerHTML = `<p class="font-extrabold text-purple-900 mb-4 flex items-center gap-2"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg> Assistente de Compras Inteligente:</p><div class="text-slate-700 space-y-2 leading-relaxed">${res.replace(/```html|```/g, '')}</div>`;
         }
 
         /* ================= UI LOGIC ================= */
@@ -537,7 +542,7 @@
                             </p>
                             <button id="btn-ai-${a.id}" onclick="getAITips(${a.id})" class="shrink-0 text-xs font-bold text-brand-600 bg-brand-50 border border-brand-200 px-3 py-2 rounded-xl shadow-sm hover:bg-brand-500 hover:text-white transition-all focus:ring-2 focus:ring-brand-300 outline-none flex items-center justify-center gap-1.5">
                                 <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm0 18a8 8 0 110-16 8 8 0 010 16zm-1-5.5h2v2h-2v-2zm1-9.5a3.5 3.5 0 00-3.5 3.5h2a1.5 1.5 0 013 0c0 1.5-2 2-2 3.5v1h2v-1c0-1.5 2-2 2-3.5A3.5 3.5 0 0012 5z"/></svg> 
-                                Tips IA
+                                Dicas IA
                             </button>
                         </div>
                         <div id="ai-result-${a.id}"></div>
@@ -552,7 +557,7 @@
 
             new Chart(document.getElementById('activityChart'), {
                 type: 'doughnut',
-                data: { labels: ['Parques (Prioridad)', 'Compras & Outlets', 'Descanso/Paseo'], datasets: [{ data: [50, 35, 15], backgroundColor: ['#3b82f6','#f97316','#10b981'], borderWidth: 0, hoverOffset: 4 }] },
+                data: { labels: ['Parques (Prioridade)', 'Compras & Outlets', 'Descanso/Passeio'], datasets: [{ data: [50, 35, 15], backgroundColor: ['#3b82f6','#f97316','#10b981'], borderWidth: 0, hoverOffset: 4 }] },
                 options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20, font: { size: 12, weight: '500' } } } } }
             });
             const commonScales = { x: { beginAtZero: true, grid: { color: '#f1f5f9' }, border: { dash: [4, 4] } }, y: { grid: { display: false }, ticks: { font: { weight: '500' } } } };
@@ -574,13 +579,21 @@
             const start = new Date("2026-03-17T00:00:00");
             const end = new Date("2026-03-29T00:00:00");
             banner.classList.remove('hidden');
+            
             if (now < start) {
                 const diff = Math.ceil((start - now) / (86400000));
-                banner.innerText = `⏳ ¡Faltan ${diff} días para el viaje! Preparen las valijas.`;
+                banner.innerText = `⏳ Faltam ${diff} dias para a viagem! Preparem as malas.`;
             } else if (now >= start && now <= end) {
-                const iso = now.toISOString().split('T')[0];
-                banner.innerHTML = `<button onclick="scrollToToday('${iso}')" class="font-bold underline w-full py-1 hover:text-slate-100 transition-colors">📍 Tocar para ver itinerario de HOY</button>`;
-            } else banner.classList.add('hidden');
+                // CORREÇÃO 2: Prevenção do erro de Fuso Horário que exibia o dia anterior em fusos UTC positivos
+                const year = now.getFullYear();
+                const month = String(now.getMonth() + 1).padStart(2, '0');
+                const day = String(now.getDate()).padStart(2, '0');
+                const isoLocal = `${year}-${month}-${day}`;
+                
+                banner.innerHTML = `<button onclick="scrollToToday('${isoLocal}')" class="font-bold underline w-full py-1 hover:text-slate-100 transition-colors">📍 Tocar para ver itinerário de HOJE</button>`;
+            } else {
+                banner.classList.add('hidden');
+            }
         }
 
         function scrollToToday(d) {
@@ -609,7 +622,8 @@
         }
 
         function limpiarListas(prefix) {
-            document.querySelectorAll(`input[id^="chk-${prefix}"]`).forEach(c => c.checked = false);
+            // CORREÇÃO 1: Adição do "-" garantindo precisão ao procurar o id
+            document.querySelectorAll(`input[id^="chk-${prefix}-"]`).forEach(c => c.checked = false);
             saveChecklist();
         }
 
