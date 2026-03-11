@@ -1,450 +1,429 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Itinerario Interactivo: Orlando & Miami 2026</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Florida Roadtrip 2026</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: { brand: { 50: '#eff6ff', 100: '#dbeafe', 500: '#3b82f6', 600: '#2563eb', 900: '#1e3a8a' } }
+                }
+            }
+        }
+    </script>
     <style>
-        .chart-container {
-            position: relative;
-            width: 100%;
-            max-width: 500px;
-            margin-left: auto;
-            margin-right: auto;
-            height: 300px;
-            max-height: 350px;
-        }
-        .distance-chart-container {
-            position: relative;
-            width: 100%;
-            height: 350px;
-        }
-        @media (min-width: 768px) {
-            .chart-container { height: 350px; }
-            .distance-chart-container { height: 400px; }
-        }
         body {
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            background-color: #f8fafc;
-            color: #0f172a;
+            background-color: #f4f7f9;
+            background-image: radial-gradient(circle at top right, #e0e7ff 0%, transparent 20%), radial-gradient(circle at bottom left, #ffedd5 0%, transparent 20%);
+            background-attachment: fixed;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
         
+        /* Ocultar barra de scroll webkit pero permitir scroll */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        .chart-container { position: relative; width: 100%; max-width: 500px; margin: 0 auto; height: 300px; }
+        .distance-chart-container { position: relative; width: 100%; height: 350px; }
+        @media (min-width: 768px) { .chart-container { height: 350px; } .distance-chart-container { height: 400px; } }
+        
+        /* Spinner Moderno */
         .ai-spinner {
-            border: 3px solid rgba(0,0,0,0.1);
+            border: 2px solid rgba(59, 130, 246, 0.2);
+            border-left-color: #3b82f6;
             border-radius: 50%;
-            border-top: 3px solid #3b82f6;
-            width: 16px;
-            height: 16px;
-            animation: spin 1s linear infinite;
+            width: 18px;
+            height: 18px;
+            animation: spin 0.8s linear infinite;
             display: inline-block;
             vertical-align: middle;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .ai-response {
-            animation: fadeIn 0.4s ease-out;
-        }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
 
-        .tab-content { display: none; animation: fadeIn 0.3s ease-in-out; }
-        .tab-content.active { display: flex; } /* Cambiado a flex para mantener el diseño correcto */
-        .tab-btn { transition: all 0.2s; border-bottom: 2px solid transparent; }
-        .tab-btn.active-tab { border-bottom: 2px solid #3b82f6; color: #1e40af; font-weight: 700; background-color: #eff6ff; }
-        .tab-btn.inactive-tab { color: #64748b; font-weight: 500; }
-        .tab-btn.inactive-tab:hover { color: #3b82f6; background-color: #f8fafc; }
+        /* Animaciones UI */
+        .fade-in { animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Tabs Logic */
+        .tab-content { display: none; opacity: 0; transition: opacity 0.3s ease; }
+        .tab-content.active { display: flex; opacity: 1; flex-direction: column; }
 
-        input[type="checkbox"]:checked + span {
-            text-decoration: line-through;
-            color: #94a3b8;
-            transition: all 0.2s ease;
-        }
-        input[type="checkbox"] + span {
-            transition: all 0.2s ease;
-        }
+        /* Checklist Moderno */
+        .check-row { transition: all 0.2s ease; }
+        .check-row:hover { background-color: #f8fafc; transform: translateX(4px); }
+        input[type="checkbox"]:checked + span { text-decoration: line-through; color: #94a3b8; }
+        input[type="checkbox"] { width: 1.1rem; height: 1.1rem; border-radius: 4px; cursor: pointer; transition: all 0.2s; }
+        
+        /* Timeline */
+        .timeline-line { position: absolute; left: 24px; top: 24px; bottom: 0; width: 2px; background: #e2e8f0; z-index: 0; }
+        .timeline-node { position: absolute; left: 16px; top: 24px; width: 18px; height: 18px; border-radius: 50%; background: #fff; border: 4px solid #3b82f6; z-index: 10; box-shadow: 0 0 0 4px #f8fafc; }
     </style>
 </head>
-<body class="antialiased min-h-screen flex flex-col">
+<body class="min-h-screen flex flex-col text-slate-800">
 
-    <header class="bg-slate-900 text-white sticky top-0 z-40 shadow-md">
-        <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
-            <div>
-                <h1 class="text-2xl font-bold tracking-tight">🌴 Florida Roadtrip 2026 🚗</h1>
-                <p class="text-slate-300 text-sm">Orlando & Miami • 17 al 29 de Marzo</p>
+    <!-- Header Glassmorphism -->
+    <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200/80 shadow-sm transition-all">
+        <div class="max-w-6xl mx-auto px-4 py-3 md:py-4 flex flex-col md:flex-row justify-between items-center gap-3">
+            <div class="text-center md:text-left">
+                <h1 class="text-xl md:text-2xl font-extrabold tracking-tight text-slate-900 drop-shadow-sm">🌴 Florida Roadtrip '26</h1>
+                <p class="text-slate-500 text-xs md:text-sm font-medium mt-0.5">Orlando & Miami • 17 al 29 de Marzo</p>
             </div>
             <div class="flex gap-2 flex-wrap justify-center">
-                <span class="bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-semibold">👨‍👩‍👦 Grupo</span>
-                <span class="bg-pink-500 text-white px-3 py-1 rounded-full text-xs font-semibold">💄 Chicas</span>
-                <span class="bg-orange-500 text-white px-3 py-1 rounded-full text-xs font-semibold">🎸 Chicos</span>
+                <span class="bg-blue-100 text-blue-800 border border-blue-200 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider shadow-sm">👨‍👩‍👦 Grupo</span>
+                <span class="bg-pink-100 text-pink-800 border border-pink-200 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider shadow-sm">💄 Chicas</span>
+                <span class="bg-orange-100 text-orange-800 border border-orange-200 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider shadow-sm">🎸 Chicos</span>
             </div>
         </div>
         
-        <div id="dynamic-time-banner" class="bg-blue-600 text-white text-center text-sm font-semibold py-2 px-4 shadow-inner transition-colors">
-            <!-- Cargando... -->
+        <div id="dynamic-time-banner" class="bg-gradient-to-r from-brand-600 to-blue-500 text-white text-center text-xs font-semibold py-1.5 px-4 shadow-inner hidden">
+            <!-- Cargando Banner Tiempo... -->
         </div>
 
-        <div class="bg-white border-b border-slate-200">
-            <div class="max-w-6xl mx-auto px-4">
-                <nav class="flex space-x-1 sm:space-x-4 overflow-x-auto" aria-label="Tabs">
-                    <button onclick="switchTab('itinerario')" id="btn-tab-itinerario" class="tab-btn active-tab px-4 py-3 text-sm focus:outline-none flex items-center gap-2 whitespace-nowrap">
-                        <span>📅</span> Itinerario & Mapa
-                    </button>
-                    <button onclick="switchTab('equipaje')" id="btn-tab-equipaje" class="tab-btn inactive-tab px-4 py-3 text-sm focus:outline-none flex items-center gap-2 whitespace-nowrap">
-                        <span>🧳</span> Equipaje
-                    </button>
-                    <button onclick="switchTab('compras')" id="btn-tab-compras" class="tab-btn inactive-tab px-4 py-3 text-sm focus:outline-none flex items-center gap-2 whitespace-nowrap">
-                        <span>🛒</span> Compras & Bares
-                    </button>
-                </nav>
-            </div>
+        <!-- Navegación de Pestañas (Pills) -->
+        <div class="max-w-6xl mx-auto px-4 py-2">
+            <nav class="flex space-x-2 overflow-x-auto pb-1" aria-label="Tabs" id="nav-tabs">
+                <button onclick="switchTab('itinerario')" id="btn-tab-itinerario" class="tab-btn bg-slate-800 text-white shadow-md rounded-full px-5 py-2.5 text-sm font-semibold transition-all flex items-center gap-2 whitespace-nowrap active:scale-95">
+                    <span>📅</span> Itinerario
+                </button>
+                <button onclick="switchTab('equipaje')" id="btn-tab-equipaje" class="tab-btn bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 hover:text-slate-900 rounded-full px-5 py-2.5 text-sm font-medium transition-all flex items-center gap-2 whitespace-nowrap active:scale-95">
+                    <span>🧳</span> Equipaje
+                </button>
+                <button onclick="switchTab('compras')" id="btn-tab-compras" class="tab-btn bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 hover:text-slate-900 rounded-full px-5 py-2.5 text-sm font-medium transition-all flex items-center gap-2 whitespace-nowrap active:scale-95">
+                    <span>🛒</span> Compras & Bares
+                </button>
+            </nav>
         </div>
     </header>
 
     <main class="flex-grow max-w-6xl mx-auto px-4 py-8 w-full">
 
-        <div id="tab-itinerario" class="tab-content active flex flex-col gap-8">
-            <section class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-                <h2 class="text-xl font-bold mb-2">Resumen Logístico y Distancias Clave</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8 mt-4">
+        <!-- ================= PESTAÑA ITINERARIO ================= -->
+        <div id="tab-itinerario" class="tab-content active gap-8 fade-in">
+            
+            <!-- Dashboard Logístico -->
+            <section class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 md:p-8">
+                <h2 class="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2"><span>📊</span> Dashboard Logístico</h2>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
                     <div class="flex flex-col gap-4">
-                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
-                            <h3 class="font-bold flex items-center gap-2">🏰 Alojamiento Orlando</h3>
-                            <p class="text-sm text-slate-700 mt-1"><strong>Worldquest Resort</strong><br>📍 8774 Worldquest Blvd</p>
+                        <div class="bg-slate-50 p-5 rounded-2xl border border-slate-100 hover:shadow-md transition-shadow">
+                            <h3 class="font-bold text-sm text-slate-900 flex items-center gap-2">🏰 Alojamiento Orlando</h3>
+                            <p class="text-sm text-slate-600 mt-2"><strong>Worldquest Resort</strong><br><span class="text-xs text-slate-400">📍 8774 Worldquest Blvd</span></p>
                         </div>
-                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
-                            <h3 class="font-bold flex items-center gap-2">🏖️ Alojamiento Miami</h3>
-                            <p class="text-sm text-slate-700 mt-1"><strong>Sunny Isles Beach</strong><br>📍 17555 Atlantic Blvd</p>
+                        <div class="bg-slate-50 p-5 rounded-2xl border border-slate-100 hover:shadow-md transition-shadow">
+                            <h3 class="font-bold text-sm text-slate-900 flex items-center gap-2">🏖️ Alojamiento Miami</h3>
+                            <p class="text-sm text-slate-600 mt-2"><strong>Sunny Isles Beach</strong><br><span class="text-xs text-slate-400">📍 17555 Atlantic Blvd</span></p>
                         </div>
-                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
-                            <h3 class="font-bold flex items-center gap-2">🚆 Movilidad</h3>
-                            <p class="text-sm text-slate-700 mt-1"><strong>Brightline</strong> (26/03) y <strong>Uber/Lyft</strong>.</p>
+                        <div class="bg-slate-50 p-5 rounded-2xl border border-slate-100 hover:shadow-md transition-shadow">
+                            <h3 class="font-bold text-sm text-slate-900 flex items-center gap-2">🚆 Movilidad Principal</h3>
+                            <p class="text-sm text-slate-600 mt-2">Tren <strong>Brightline</strong> (Traslado 26/03) y flota de <strong>Uber/Lyft</strong> local.</p>
                         </div>
                     </div>
 
-                    <div class="lg:col-span-2 flex flex-col justify-center items-center bg-slate-50 p-4 rounded-xl border border-slate-100">
-                        <h3 class="font-bold mb-2 text-center">Distribución del Viaje</h3>
-                        <div class="chart-container">
-                            <canvas id="activityChart"></canvas>
-                        </div>
+                    <div class="lg:col-span-2 bg-slate-50 p-6 rounded-2xl border border-slate-100 flex flex-col justify-center items-center">
+                        <h3 class="font-bold text-sm text-slate-800 mb-4">Distribución del Viaje</h3>
+                        <div class="chart-container"><canvas id="activityChart"></canvas></div>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6 pt-6 border-t border-slate-200">
-                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
-                        <h3 class="font-bold text-blue-900 text-center">📍 Orlando (desde Worldquest)</h3>
-                        <p class="text-xs text-slate-500 text-center mb-4">Distancias expresadas en kilómetros (km)</p>
-                        <div class="distance-chart-container">
-                            <canvas id="orlandoDistancesChart"></canvas>
-                        </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8 pt-8 border-t border-slate-100">
+                    <div>
+                        <h3 class="font-bold text-brand-600 text-center text-sm mb-1">📍 Distancias en Orlando</h3>
+                        <p class="text-[10px] text-slate-400 text-center mb-4 uppercase tracking-wider">Desde Worldquest Resort (KM)</p>
+                        <div class="distance-chart-container"><canvas id="orlandoDistancesChart"></canvas></div>
                     </div>
-                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
-                        <h3 class="font-bold text-blue-900 text-center">📍 Miami (desde Sunny Isles)</h3>
-                        <p class="text-xs text-slate-500 text-center mb-4">Distancias expresadas en kilómetros (km)</p>
-                        <div class="distance-chart-container">
-                            <canvas id="miamiDistancesChart"></canvas>
-                        </div>
+                    <div>
+                        <h3 class="font-bold text-teal-600 text-center text-sm mb-1">📍 Distancias en Miami</h3>
+                        <p class="text-[10px] text-slate-400 text-center mb-4 uppercase tracking-wider">Desde Sunny Isles (KM)</p>
+                        <div class="distance-chart-container"><canvas id="miamiDistancesChart"></canvas></div>
                     </div>
                 </div>
             </section>
 
-            <section class="flex flex-col gap-4">
-                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-                    <h2 class="text-xl font-bold mb-4">Plan Diario Detallado</h2>
-                    <div class="flex flex-wrap gap-2 mb-6" id="filter-container">
-                        <button data-filter="all" class="filter-btn px-4 py-2 bg-slate-800 text-white rounded-lg text-sm font-medium transition-colors">Ver Todo</button>
-                        <button data-filter="chicas" class="filter-btn px-4 py-2 bg-slate-100 text-slate-700 hover:bg-pink-100 rounded-lg text-sm font-medium transition-colors">💄 Chicas</button>
-                        <button data-filter="chicos" class="filter-btn px-4 py-2 bg-slate-100 text-slate-700 hover:bg-orange-100 rounded-lg text-sm font-medium transition-colors">🎸 Chicos</button>
+            <!-- Línea de Tiempo del Itinerario -->
+            <section class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 md:p-8">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+                    <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2"><span>🗺️</span> Ruta Diaria</h2>
+                    
+                    <!-- Filtros Modernos -->
+                    <div class="flex bg-slate-100 p-1 rounded-full overflow-x-auto max-w-full" id="filter-container">
+                        <button data-filter="all" class="filter-btn bg-white shadow-sm text-slate-800 px-4 py-1.5 rounded-full text-xs font-bold transition-all">Ver Todo</button>
+                        <button data-filter="chicas" class="filter-btn text-slate-500 hover:text-slate-800 px-4 py-1.5 rounded-full text-xs font-medium transition-all">💄 Chicas</button>
+                        <button data-filter="chicos" class="filter-btn text-slate-500 hover:text-slate-800 px-4 py-1.5 rounded-full text-xs font-medium transition-all">🎸 Chicos</button>
                     </div>
-                    <div id="itinerary-list" class="flex flex-col gap-4"></div>
                 </div>
-            </section>
-        </div>
 
-        <div id="tab-equipaje" class="tab-content flex flex-col gap-6">
-            <section class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-                <h2 class="text-2xl font-bold mb-4 border-b pb-2">🧳 Estrategia de Equipaje</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div class="bg-orange-50 border border-orange-200 rounded-xl p-5 shadow-sm">
-                        <h3 class="text-lg font-bold text-orange-900 mb-4 flex items-center gap-2">🎸 Hombres</h3>
-                        <ul class="text-sm text-orange-950 space-y-2">
-                            <li>✅ 3 remeras cómodas (comprar el resto allá).</li>
-                            <li>✅ 1 Jean puesto + 1 Bermuda en valija.</li>
-                            <li>✅ Bermuda.</li>
-                            <li>✅ Powerbank obligatorio.</li>
-                            <li>⚠️ No llevar cascos ni herramientas (comprar allá).</li>
-                        </ul>
-                    </div>
-                    <div class="bg-pink-50 border border-pink-200 rounded-xl p-5 shadow-sm">
-                        <h3 class="text-lg font-bold text-pink-900 mb-4 flex items-center gap-2">💄 Mujeres</h3>
-                        <ul class="text-sm text-pink-950 space-y-2">
-                            <li>✅ Ropa liviana para 4 días.</li>
-                            <li>✅ Un abrigo para la noche.</li>
-                            <li>✅ Zapatillas de parque + sandalias cómodas.</li>
-                            <li>⚠️ Cosmética o perfumes (comprar allá).</li>
-                            <li>⚠️ Dejar espacio para Stanley, 3D y ropa de Aventura Mall.</li>
-                        </ul>
-                    </div>
+                <!-- Estructura Timeline -->
+                <div class="relative py-4" id="itinerary-timeline-container">
+                    <div class="timeline-line hidden sm:block"></div>
+                    <div id="itinerary-list" class="flex flex-col gap-6"></div>
                 </div>
             </section>
         </div>
 
-        <div id="tab-compras" class="tab-content flex flex-col gap-6">
-            <div class="bg-slate-900 text-white rounded-2xl shadow-lg p-6 border-b-4 border-orange-500 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <div>
-                    <h2 class="text-2xl font-bold">📝 Listas de Compras</h2>
-                    <p class="text-slate-300 text-sm mt-1">Checklist personal de Juan y Sofi.</p>
+        <!-- ================= PESTAÑA EQUIPAJE ================= -->
+        <div id="tab-equipaje" class="tab-content gap-6 fade-in">
+            <section class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 md:p-8 overflow-hidden relative">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-slate-50 rounded-full -mr-16 -mt-16 z-0"></div>
+                <h2 class="text-2xl font-extrabold text-slate-800 mb-6 relative z-10 flex items-center gap-2">🧳 Estrategia de Equipaje</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10">
+                    <div class="bg-gradient-to-b from-orange-50 to-white border border-orange-100 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow">
+                        <h3 class="text-lg font-bold text-orange-900 mb-5 flex items-center gap-2 border-b border-orange-200/50 pb-3">
+                            <span class="bg-orange-100 p-2 rounded-lg text-xl shadow-sm">🎸</span> Hombres
+                        </h3>
+                        <ul class="text-sm text-slate-700 space-y-4 font-medium">
+                            <li class="flex items-start gap-3"><span class="text-green-500 text-lg">✓</span> <span>3 remeras cómodas (comprar el resto allá).</span></li>
+                            <li class="flex items-start gap-3"><span class="text-green-500 text-lg">✓</span> <span>1 Jean puesto + 1 Bermuda en valija.</span></li>
+                            <li class="flex items-start gap-3"><span class="text-green-500 text-lg">✓</span> <span>Powerbank OBLIGATORIO (10.000mAh min).</span></li>
+                            <li class="flex items-start gap-3 bg-red-50 p-3 rounded-xl border border-red-100"><span class="text-red-500 text-lg">⚠</span> <span class="text-red-900">NO llevar cascos ni herramientas desde casa. Comprar todo en USA.</span></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="bg-gradient-to-b from-pink-50 to-white border border-pink-100 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow">
+                        <h3 class="text-lg font-bold text-pink-900 mb-5 flex items-center gap-2 border-b border-pink-200/50 pb-3">
+                            <span class="bg-pink-100 p-2 rounded-lg text-xl shadow-sm">💄</span> Mujeres
+                        </h3>
+                        <ul class="text-sm text-slate-700 space-y-4 font-medium">
+                            <li class="flex items-start gap-3"><span class="text-green-500 text-lg">✓</span> <span>Ropa liviana para los primeros 4 días.</span></li>
+                            <li class="flex items-start gap-3"><span class="text-green-500 text-lg">✓</span> <span>1 abrigo ligero para la noche/aire acondicionado.</span></li>
+                            <li class="flex items-start gap-3"><span class="text-green-500 text-lg">✓</span> <span>Zapatillas "rotas" (cómodas para parque) + sandalias.</span></li>
+                            <li class="flex items-start gap-3 bg-red-50 p-3 rounded-xl border border-red-100"><span class="text-red-500 text-lg">⚠</span> <span class="text-red-900">Dejar EXTREMO espacio vacío en valija para ropa, Stanley y maquillaje.</span></li>
+                        </ul>
+                    </div>
                 </div>
-                <div class="flex gap-2 w-full md:w-auto">
-                    <button onclick="getAIShoppingPhrases('juan')" class="flex-1 md:flex-none bg-orange-600 hover:bg-orange-500 transition-colors text-white px-3 py-2 rounded text-xs shadow-sm">✨ Tips Frases Juan</button>
-                    <button onclick="getAIShoppingPhrases('sofi')" class="flex-1 md:flex-none bg-pink-600 hover:bg-pink-500 transition-colors text-white px-3 py-2 rounded text-xs shadow-sm">✨ Tips Frases Sofi</button>
+            </section>
+        </div>
+
+        <!-- ================= PESTAÑA COMPRAS ================= -->
+        <div id="tab-compras" class="tab-content gap-6 fade-in">
+            <!-- IA Shopping Header -->
+            <div class="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-3xl shadow-lg p-6 md:p-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative overflow-hidden">
+                <div class="absolute right-0 top-0 opacity-10 pointer-events-none">
+                    <svg width="200" height="200" viewBox="0 0 24 24" fill="currentColor"><path d="M16 6V4C16 2.89543 15.1046 2 14 2H10C8.89543 2 8 2.89543 8 4V6H3C2.44772 6 2 6.44772 2 7V20C2 21.1046 2.89543 22 4 22H20C21.1046 22 22 21.1046 22 20V7C22 6.44772 21.5523 6 21 6H16ZM10 4H14V6H10V4ZM4 8H20V20H4V8Z"></path></svg>
+                </div>
+                <div class="relative z-10">
+                    <h2 class="text-2xl font-extrabold flex items-center gap-2">🛒 Misión de Compras</h2>
+                    <p class="text-slate-300 text-sm mt-2 max-w-md leading-relaxed">Listas exactas de la misión. Utilizá la Inteligencia Artificial para generar frases en inglés nativo antes de entrar a las tiendas.</p>
+                </div>
+                <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto relative z-10">
+                    <button onclick="getAIShoppingPhrases('juan')" class="group flex-1 bg-orange-500 hover:bg-orange-400 text-white px-4 py-3 rounded-xl text-sm font-bold transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 flex justify-center items-center gap-2">
+                        <span>🎸</span> Frases Inglés (Hombres)
+                    </button>
+                    <button onclick="getAIShoppingPhrases('sofi')" class="group flex-1 bg-pink-500 hover:bg-pink-400 text-white px-4 py-3 rounded-xl text-sm font-bold transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 flex justify-center items-center gap-2">
+                        <span>💄</span> Frases Inglés (Mujeres)
+                    </button>
                 </div>
             </div>
             
-            <div id="ai-shopping-result" class="hidden p-5 bg-white text-slate-800 rounded-xl text-sm ai-response border-l-4 border-purple-500 shadow-md"></div>
+            <div id="ai-shopping-result" class="hidden p-6 bg-white border border-purple-100 rounded-3xl text-sm ai-response shadow-lg border-l-4 border-l-purple-500"></div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div class="lg:col-span-1 flex flex-col gap-6">
-                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 relative">
-                        <h3 class="font-bold border-b pb-2 mb-4">🎸 Juan</h3>
-                        <div class="space-y-2 text-sm" id="checklist-juan">
-                            <label class="flex items-start gap-2 cursor-pointer hover:bg-slate-50 p-1 rounded"><input type="checkbox" id="chk-j-1" onchange="saveChecklist()" class="mt-1 accent-orange-500"> <span>Strymon Iridium / Nux Academy</span></label>
-                            <label class="flex items-start gap-2 cursor-pointer hover:bg-slate-50 p-1 rounded"><input type="checkbox" id="chk-j-2" onchange="saveChecklist()" class="mt-1 accent-orange-500"> <span>Boss TR-2 / EQ / Chorus / Wah</span></label>
-                            <label class="flex items-start gap-2 cursor-pointer hover:bg-slate-50 p-1 rounded"><input type="checkbox" id="chk-j-3" onchange="saveChecklist()" class="mt-1 accent-orange-500"> <span>Focusrite Scarlett / Behringer</span></label>
-                            <label class="flex items-start gap-2 cursor-pointer hover:bg-slate-50 p-1 rounded"><input type="checkbox" id="chk-j-4" onchange="saveChecklist()" class="mt-1 accent-orange-500"> <span>Herramientas Moto (Harbor Freight)</span></label>
-                            <label class="flex items-start gap-2 cursor-pointer hover:bg-slate-50 p-1 rounded"><input type="checkbox" id="chk-j-5" onchange="saveChecklist()" class="mt-1 accent-orange-500"> <span>Visor Espejado LS2 FF806</span></label>
-                        </div>
-                    </div>
-                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 relative">
-                        <h3 class="font-bold border-b pb-2 mb-4 text-pink-700">💄 Sofi </h3>
-                        <div class="space-y-2 text-sm" id="checklist-sofi">
-                            <label class="flex items-start gap-2 cursor-pointer hover:bg-slate-50 p-1 rounded"><input type="checkbox" id="chk-s-1" onchange="saveChecklist()" class="mt-1 accent-pink-500"> <span>Anteojos de Sol</span></label>
-                            <label class="flex items-start gap-2 cursor-pointer hover:bg-slate-50 p-1 rounded"><input type="checkbox" id="chk-s-2" onchange="saveChecklist()" class="mt-1 accent-pink-500"> <span>Termo y Vaso Stanley (Dick's)</span></label>
-                            <label class="flex items-start gap-2 cursor-pointer hover:bg-slate-50 p-1 rounded"><input type="checkbox" id="chk-s-3" onchange="saveChecklist()" class="mt-1 accent-pink-500"> <span>Ropa (Aventura/Outlets)</span></label>
-                            <label class="flex items-start gap-2 cursor-pointer hover:bg-slate-50 p-1 rounded"><input type="checkbox" id="chk-s-4" onchange="saveChecklist()" class="mt-1 accent-pink-500"> <span>Auriculares Inalámbricos</span></label>
-                        </div>
-                        <button onclick="limpiarListas()" class="absolute top-4 right-4 text-xs text-slate-400 hover:text-red-500 transition-colors">Limpiar</button>
-                    </div>
-                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 relative">
-                        <h3 class="font-bold border-b pb-2 mb-4 text-pink-700"> Lizi </h3>
-                        <div class="space-y-2 text-sm" id="checklist-lizi">
-                            <label class="flex items-start gap-2 cursor-pointer hover:bg-slate-50 p-1 rounded"><input type="checkbox" id="chk-l-1" onchange="saveChecklist()" class="mt-1 accent-purple-500"> <span class="font-bold text-purple-700">Cosas Impresora 3D (Filamento/Repuestos/Pico)</span></label>
-                        </div>
-                        <button onclick="limpiarListas()" class="absolute top-4 right-4 text-xs text-slate-400 hover:text-red-500 transition-colors">Limpiar</button>
-                    </div>
-                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 relative">
-                        <h3 class="font-bold border-b pb-2 mb-4 text-pink-700"> Julian </h3>
-                        <div class="space-y-2 text-sm" id="checklist-julian">
-                            <label class="flex items-start gap-2 cursor-pointer hover:bg-slate-50 p-1 rounded"><input type="checkbox" id="chk-j-iphone" onchange="saveChecklist()" class="mt-1 accent-purple-500"> <span class="font-bold text-purple-700">Iphone</span></label>
-                        </div>
-                        <button onclick="limpiarListas()" class="absolute top-4 right-4 text-xs text-slate-400 hover:text-red-500 transition-colors">Limpiar</button>
+            <!-- Listas Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Checklists Personales -->
+                <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 relative group hover:border-orange-200 transition-colors">
+                    <h3 class="font-bold text-lg border-b border-slate-100 pb-3 mb-4 flex justify-between items-center">
+                        <span class="text-slate-800">🎸 Juan</span>
+                        <button onclick="limpiarListas('j')" class="opacity-0 group-hover:opacity-100 text-[10px] uppercase font-bold text-slate-400 hover:text-red-500 transition-all bg-slate-50 px-2 py-1 rounded">Reset</button>
+                    </h3>
+                    <div class="space-y-1 text-sm font-medium" id="checklist-juan">
+                        <label class="check-row flex items-start gap-3 p-2 rounded-lg cursor-pointer"><input type="checkbox" id="chk-j-1" onchange="saveChecklist()" class="mt-0.5 accent-orange-500"> <span class="select-none text-slate-700">Strymon Iridium / Nux</span></label>
+                        <label class="check-row flex items-start gap-3 p-2 rounded-lg cursor-pointer"><input type="checkbox" id="chk-j-2" onchange="saveChecklist()" class="mt-0.5 accent-orange-500"> <span class="select-none text-slate-700">Boss TR-2 / EQ / Chorus</span></label>
+                        <label class="check-row flex items-start gap-3 p-2 rounded-lg cursor-pointer"><input type="checkbox" id="chk-j-3" onchange="saveChecklist()" class="mt-0.5 accent-orange-500"> <span class="select-none text-slate-700">Focusrite Scarlett</span></label>
+                        <label class="check-row flex items-start gap-3 p-2 rounded-lg cursor-pointer"><input type="checkbox" id="chk-j-4" onchange="saveChecklist()" class="mt-0.5 accent-orange-500"> <span class="select-none text-slate-700">Herramientas (Harbor Freight)</span></label>
+                        <label class="check-row flex items-start gap-3 p-2 rounded-lg cursor-pointer"><input type="checkbox" id="chk-j-5" onchange="saveChecklist()" class="mt-0.5 accent-orange-500"> <span class="select-none text-slate-700">Visor Espejado LS2 FF806</span></label>
                     </div>
                 </div>
-                
-                <div class="lg:col-span-2 flex flex-col gap-6">
-                    <div class="bg-yellow-50 border border-yellow-200 rounded-2xl p-5 shadow-sm">
-                        <h3 class="font-bold text-yellow-900 text-sm flex items-center gap-2">⚠️ Tip Investigativo: Compras de Nicho</h3>
-                        <p class="text-xs text-yellow-800 mt-1">Algunos pedales boutique y algunos <strong>filamentos 3D raros</strong> a veces no tienen stock físico. Compren por Amazon antes del viaje y envíen a un <strong>Amazon Locker</strong> cercano y gratuito.</p>
-                    </div>
 
-                    <div class="bg-blue-50 border border-blue-200 rounded-2xl p-5 shadow-sm">
-                        <h3 class="font-bold text-blue-900 text-lg mb-4 flex items-center gap-2">🏰 COMPRAS - Ranking Orlando (Desde Worldquest Resort)</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <!-- Bares -->
-                            <div class="bg-white p-4 rounded-xl shadow-sm border border-blue-100 md:col-span-2">
-                                <h4 class="font-bold text-sm text-slate-800 border-b pb-1 mb-2">🍻 Bares de Blues y Rock</h4>
-                                <ul class="text-xs text-slate-700 space-y-3">
-                                    <li><span class="text-lg">🥇</span> <strong>Tanqueray's Bar</strong> | 📍 Downtown | 🚗 30 km.<br><span class="text-slate-500"><strong>Por qué ir:</strong> EL MEJOR costo/beneficio. Sótano histórico con jams de blues local.</span></li>
-                                    <li><span class="text-lg">🏆</span> <strong>Hard Rock Cafe (Universal CityWalk)</strong> | 📍 Universal Blvd | 🚗 18 km.<br><span class="text-slate-500"><strong>Por qué ir:</strong> IMPRESCINDIBLE. Es el más grande del mundo, funciona como museo de la música.</span></li>
-                                    <li><span class="text-lg">🥈</span> <strong>House of Blues</strong> | 📍 Disney Springs | 🚗 4 km.<br><span class="text-slate-500"><strong>Por qué ir:</strong> Súper cerca. Excelente sonido en el patio (Front Porch), ideal para descansar.</span></li>
-                                </ul>
-                            </div>
-                            <!-- Música -->
-                            <div class="bg-white p-4 rounded-xl shadow-sm border border-blue-100">
-                                <h4 class="font-bold text-sm text-slate-800 border-b pb-1 mb-2">🎸 Música y Pedales</h4>
-                                <ul class="text-xs text-slate-700 space-y-3">
-                                    <li><span class="text-lg">🥇</span> <strong>Guitar Center (OBT)</strong> | 🚗 15 km.<br><span class="text-slate-500"><strong>Por qué ir:</strong> Enorme sección de "Used Gear" (pedales usados).</span></li>
-                                    <li><span class="text-lg">🥈</span> <strong>La Familia Pawn</strong> | 🚗 16 km.<br><span class="text-slate-500"><strong>Por qué ir:</strong> Casa de empeño en la misma ruta que el Guitar Center para cazar gangas.</span></li>
-                                </ul>
-                            </div>
-                            <!-- Motos -->
-                            <div class="bg-white p-4 rounded-xl shadow-sm border border-blue-100">
-                                <h4 class="font-bold text-sm text-slate-800 border-b pb-1 mb-2">🏍️ Motos y Herramientas</h4>
-                                <ul class="text-xs text-slate-700 space-y-3">
-                                    <li><span class="text-lg">🏆</span> <strong>Orlando Harley-Davidson</strong> | 🚗 20 km.<br><span class="text-slate-500"><strong>Por qué ir:</strong> Es la "fábrica histórica". Ícono mundial para ropa biker.</span></li>
-                                    <li><span class="text-lg">🥇</span> <strong>Harbor Freight Tools</strong> | 🚗 8 km.<br><span class="text-slate-500"><strong>Por qué ir:</strong> 🛠️ ¡FUNDAMENTAL! Paraíso de herramientas buenas y baratas (destornilladores).</span></li>
-                                </ul>
-                            </div>
-                            <!-- Tecnología / 3D Orlando -->
-                            <div class="bg-white p-4 rounded-xl shadow-sm border border-blue-100">
-                                <h4 class="font-bold text-sm text-purple-800 border-b pb-1 mb-2">💻 Tecnología & Maker (3D)</h4>
-                                <ul class="text-xs text-slate-700 space-y-3">
-                                    <li><span class="text-lg">💡</span> <strong>Amazon Locker</strong><br><span class="text-slate-500"><strong>Por qué ir:</strong> En Orlando las tiendas físicas de 3D son escasas. Compra en Amazon y envía aquí.</span></li>
-                                    <li><span class="text-lg">🥈</span> <strong>Best Buy (Florida Mall)</strong> | 🚗 10 km.<br><span class="text-slate-500"><strong>Por qué ir:</strong> Tienen stock básico de algunas cosas 3D y tecnología general.</span></li>
-                                </ul>
-                            </div>
-                            <!-- Moda -->
-                            <div class="bg-white p-4 rounded-xl shadow-sm border border-blue-100">
-                                <h4 class="font-bold text-sm text-slate-800 border-b pb-1 mb-2">💄 Moda, Stanley y General</h4>
-                                <ul class="text-xs text-slate-700 space-y-3">
-                                    <li><span class="text-lg">🥇</span> <strong>Florida Mall (Primark, Dick's)</strong> | 🚗 10-15 km.<br><span class="text-slate-500"><strong>Por qué ir:</strong> Dick's (para Stanley), Primark (ropa baratísima) y Apple Store.</span></li>
-                                    <li><span class="text-lg">🥇</span> <strong>Vineland Premium Outlets</strong> | 🚗 5 km.<br><span class="text-slate-500"><strong>Por qué ir:</strong> Insuperable para lujo y maquillaje.</span></li>
-                                    <li><span class="text-lg">🥇</span> <strong>ROSS / T.J. Maxx</strong> | 🚗 5 km.<br><span class="text-slate-500"><strong>Por qué ir:</strong> Ross para valijas. T.J. Maxx para anteojos/pijamas.</span></li>
-                                </ul>
-                            </div>
+                <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 relative group hover:border-pink-200 transition-colors">
+                    <h3 class="font-bold text-lg border-b border-slate-100 pb-3 mb-4 flex justify-between items-center">
+                        <span class="text-pink-700">💄 Sofi</span>
+                        <button onclick="limpiarListas('s')" class="opacity-0 group-hover:opacity-100 text-[10px] uppercase font-bold text-slate-400 hover:text-red-500 transition-all bg-slate-50 px-2 py-1 rounded">Reset</button>
+                    </h3>
+                    <div class="space-y-1 text-sm font-medium" id="checklist-sofi">
+                        <label class="check-row flex items-start gap-3 p-2 rounded-lg cursor-pointer"><input type="checkbox" id="chk-s-1" onchange="saveChecklist()" class="mt-0.5 accent-pink-500"> <span class="select-none text-slate-700">Anteojos de Sol</span></label>
+                        <label class="check-row flex items-start gap-3 p-2 rounded-lg cursor-pointer"><input type="checkbox" id="chk-s-2" onchange="saveChecklist()" class="mt-0.5 accent-pink-500"> <span class="select-none text-slate-700">Termo y Vaso Stanley</span></label>
+                        <label class="check-row flex items-start gap-3 p-2 rounded-lg cursor-pointer"><input type="checkbox" id="chk-s-3" onchange="saveChecklist()" class="mt-0.5 accent-pink-500"> <span class="select-none text-slate-700">Ropa (Aventura/Outlets)</span></label>
+                        <label class="check-row flex items-start gap-3 p-2 rounded-lg cursor-pointer"><input type="checkbox" id="chk-s-4" onchange="saveChecklist()" class="mt-0.5 accent-pink-500"> <span class="select-none text-slate-700">Auriculares Inalámbricos</span></label>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 relative group hover:border-purple-200 transition-colors">
+                    <h3 class="font-bold text-lg border-b border-slate-100 pb-3 mb-4 flex justify-between items-center">
+                        <span class="text-purple-700">🖨️ Lizi</span>
+                        <button onclick="limpiarListas('l')" class="opacity-0 group-hover:opacity-100 text-[10px] uppercase font-bold text-slate-400 hover:text-red-500 transition-all bg-slate-50 px-2 py-1 rounded">Reset</button>
+                    </h3>
+                    <div class="space-y-1 text-sm font-medium" id="checklist-lizi">
+                        <label class="check-row flex items-start gap-3 p-2 rounded-lg cursor-pointer"><input type="checkbox" id="chk-l-1" onchange="saveChecklist()" class="mt-0.5 accent-purple-500"> <span class="select-none text-purple-900 font-bold">Insumos 3D (Filamento/Pico)</span></label>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 relative group hover:border-blue-200 transition-colors">
+                    <h3 class="font-bold text-lg border-b border-slate-100 pb-3 mb-4 flex justify-between items-center">
+                        <span class="text-blue-700">📱 Julian</span>
+                        <button onclick="limpiarListas('ju')" class="opacity-0 group-hover:opacity-100 text-[10px] uppercase font-bold text-slate-400 hover:text-red-500 transition-all bg-slate-50 px-2 py-1 rounded">Reset</button>
+                    </h3>
+                    <div class="space-y-1 text-sm font-medium" id="checklist-julian">
+                        <label class="check-row flex items-start gap-3 p-2 rounded-lg cursor-pointer"><input type="checkbox" id="chk-ju-1" onchange="saveChecklist()" class="mt-0.5 accent-blue-500"> <span class="select-none text-blue-900 font-bold">iPhone</span></label>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tip Investigativo -->
+            <div class="bg-yellow-50 border border-yellow-200 rounded-3xl p-6 shadow-sm">
+                <h3 class="font-extrabold text-yellow-900 text-sm flex items-center gap-2 uppercase tracking-wide">
+                    <svg class="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    Tip Investigativo: Compras de Nicho
+                </h3>
+                <p class="text-sm text-yellow-800 mt-2 leading-relaxed">Algunos pedales boutique y <strong>filamentos 3D específicos</strong> a veces no tienen stock físico asegurado. Es recomendable comprar por Amazon EE.UU. 2 semanas antes del viaje y enviar todo a un <strong>Amazon Locker</strong> cercano y gratuito para asegurar la misión.</p>
+            </div>
+
+            <!-- Rankings -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-4">
+                <!-- Orlando Shopping -->
+                <div class="bg-white border border-slate-200 rounded-3xl shadow-sm overflow-hidden">
+                    <div class="bg-brand-50 border-b border-brand-100 p-5">
+                        <h3 class="font-extrabold text-brand-900 text-lg flex items-center gap-2">🏰 Ranking Compras: Orlando</h3>
+                        <p class="text-xs text-brand-600 font-medium">Desde Worldquest Resort</p>
+                    </div>
+                    <div class="p-5 space-y-6">
+                        <div>
+                            <h4 class="font-bold text-sm text-slate-800 border-b border-slate-100 pb-2 mb-3 uppercase tracking-wider">🍻 Bares (Blues & Rock)</h4>
+                            <ul class="text-xs text-slate-600 space-y-4">
+                                <li class="flex gap-3"><span class="text-xl">🥇</span><div><strong class="text-slate-900 text-sm">Tanqueray's Bar</strong> (Downtown, 30km)<br>El mejor costo/beneficio. Sótano histórico con jams de blues local.</div></li>
+                                <li class="flex gap-3"><span class="text-xl">🏆</span><div><strong class="text-slate-900 text-sm">Hard Rock Cafe</strong> (CityWalk, 18km)<br>Imprescindible. El más grande del mundo, funciona como museo.</div></li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-sm text-slate-800 border-b border-slate-100 pb-2 mb-3 uppercase tracking-wider">🎸 Música & Motos</h4>
+                            <ul class="text-xs text-slate-600 space-y-4">
+                                <li class="flex gap-3"><span class="text-xl">🥇</span><div><strong class="text-slate-900 text-sm">Guitar Center & La Familia Pawn</strong> (OBT, 15km)<br>Para probar equipo nuevo y cazar gangas en empeños en la misma ruta.</div></li>
+                                <li class="flex gap-3"><span class="text-xl">🏆</span><div><strong class="text-slate-900 text-sm">Orlando Harley & Harbor Freight</strong> (20km / 8km)<br>Fábrica histórica de Harley y paraíso de herramientas baratas.</div></li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-sm text-slate-800 border-b border-slate-100 pb-2 mb-3 uppercase tracking-wider">💄 Moda & General</h4>
+                            <ul class="text-xs text-slate-600 space-y-4">
+                                <li class="flex gap-3"><span class="text-xl">🥇</span><div><strong class="text-slate-900 text-sm">Florida Mall & Premium Outlets</strong> (10km / 5km)<br>Dick's (Stanley), Primark (Ropa barata) y Outlets para lujo/maquillaje.</div></li>
+                            </ul>
                         </div>
                     </div>
+                </div>
 
-                    <div class="bg-teal-50 border border-teal-200 rounded-2xl p-5 shadow-sm">
-                        <h3 class="font-bold text-teal-900 text-lg mb-4 flex items-center gap-2">🏖️ COMPRAS - Ranking Miami (Desde Sunny Isles)</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <!-- Gigante Compras -->
-                            <div class="bg-white p-4 rounded-xl shadow-sm border border-teal-100 md:col-span-2">
-                                <h4 class="font-bold text-sm text-slate-800 border-b pb-1 mb-2">🛍️ El Gigante de las Compras</h4>
-                                <ul class="text-xs text-slate-700 space-y-3">
-                                    <li><span class="text-lg">🏆</span> <strong>Sawgrass Mills (Sunrise)</strong> | 📍 12801 W Sunrise Blvd | 🚗 35 km.<br><span class="text-slate-500"><strong>Por qué ir:</strong> IMPRESCINDIBLE. Es el outlet más grande de EE.UU. Resuelven TODAS las compras del grupo aquí. Vale la pena el viaje de 40 mins.</span></li>
-                                </ul>
-                            </div>
-                            <!-- Impresión 3D Miami -->
-                            <div class="bg-white p-4 rounded-xl shadow-sm border border-teal-100 md:col-span-2">
-                                <h4 class="font-bold text-sm text-purple-800 border-b pb-1 mb-2">🖨️ Tecnología e Impresión 3D</h4>
-                                <ul class="text-xs text-slate-700 space-y-3">
-                                    <li><span class="text-lg">🏆</span> <strong>Micro Center (Miami)</strong> | 📍 7795 W Flagler St | 🚗 35 km.<br><span class="text-slate-500"><strong>Por qué ir:</strong> EL PARAÍSO PARA TU MAMÁ. Es la mejor tienda de tecnología de USA. Tienen pasillos enteros dedicados a <strong>Impresoras 3D (Bambu, Creality), repuestos y paredes de filamentos</strong> de todos los colores. ¡Visita súper obligatoria!</span></li>
-                                </ul>
-                            </div>
-                            <!-- Bares -->
-                            <div class="bg-white p-4 rounded-xl shadow-sm border border-teal-100">
-                                <h4 class="font-bold text-sm text-slate-800 border-b pb-1 mb-2">🍻 Bares Musicales y Paseos</h4>
-                                <ul class="text-xs text-slate-700 space-y-3">
-                                    <li><span class="text-lg">🥇</span> <strong>Hollywood Beach Broadwalk</strong> | 🚗 8.5 km.<br><span class="text-slate-500"><strong>Por qué ir:</strong> Bandas de rock clásico/blues al aire libre frente al mar gratis.</span></li>
-                                    <li><span class="text-lg">🥈</span> <strong>Seminole Hard Rock Hotel</strong> | 🚗 20 km.<br><span class="text-slate-500"><strong>Por qué ir:</strong> Arquitectura asombrosa de guitarra. Museo y casino.</span></li>
-                                </ul>
-                            </div>
-                            <!-- Moda Miami -->
-                            <div class="bg-white p-4 rounded-xl shadow-sm border border-teal-100">
-                                <h4 class="font-bold text-sm text-slate-800 border-b pb-1 mb-2">🛍️ Moda (Cerca) y Biker</h4>
-                                <ul class="text-xs text-slate-700 space-y-3">
-                                    <li><span class="text-lg">🥇</span> <strong>Aventura Mall</strong> | 🚗 4 km.<br><span class="text-slate-500"><strong>Por qué ir:</strong> Shopping premium inmenso. Plan B excelente si no van a Sawgrass.</span></li>
-                                    <li><span class="text-lg">🥇</span> <strong>Peterson's Harley-Davidson</strong> | 🚗 12 km.<br><span class="text-slate-500"><strong>Por qué ir:</strong> Concesionario histórico ideal para la remera de recuerdo.</span></li>
-                                </ul>
-                            </div>
+                <!-- Miami Shopping -->
+                <div class="bg-white border border-slate-200 rounded-3xl shadow-sm overflow-hidden">
+                    <div class="bg-teal-50 border-b border-teal-100 p-5">
+                        <h3 class="font-extrabold text-teal-900 text-lg flex items-center gap-2">🏖️ Ranking Compras: Miami</h3>
+                        <p class="text-xs text-teal-600 font-medium">Desde Sunny Isles</p>
+                    </div>
+                    <div class="p-5 space-y-6">
+                        <div>
+                            <h4 class="font-bold text-sm text-slate-800 border-b border-slate-100 pb-2 mb-3 uppercase tracking-wider">🛍️ El Gigante</h4>
+                            <ul class="text-xs text-slate-600 space-y-4">
+                                <li class="flex gap-3"><span class="text-xl">🏆</span><div><strong class="text-slate-900 text-sm">Sawgrass Mills</strong> (Sunrise, 35km)<br>IMPRESCINDIBLE. El outlet más grande de EE.UU. Resuelve todo el viaje en un día.</div></li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-sm text-purple-800 border-b border-purple-100 pb-2 mb-3 uppercase tracking-wider">🖨️ Tecnología 3D</h4>
+                            <ul class="text-xs text-slate-600 space-y-4">
+                                <li class="flex gap-3"><span class="text-xl">🚀</span><div><strong class="text-slate-900 text-sm">Micro Center</strong> (Miami, 35km)<br>EL PARAÍSO. La mejor tienda de tecnología de USA. Tienen pasillos enteros de Impresoras 3D, repuestos y paredes de filamentos.</div></li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-sm text-slate-800 border-b border-slate-100 pb-2 mb-3 uppercase tracking-wider">🍻 Paseos & Biker</h4>
+                            <ul class="text-xs text-slate-600 space-y-4">
+                                <li class="flex gap-3"><span class="text-xl">🎸</span><div><strong class="text-slate-900 text-sm">Hollywood Broadwalk & Hard Rock</strong> (8km / 20km)<br>Música clásica gratis frente al mar y el asombroso Guitar Hotel.</div></li>
+                                <li class="flex gap-3"><span class="text-xl">🏍️</span><div><strong class="text-slate-900 text-sm">Peterson's Harley-Davidson</strong> (12km)<br>Concesionario histórico ideal para la remera de recuerdo de Miami.</div></li>
+                            </ul>
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>
     </main>
 
-    <footer class="bg-slate-900 text-slate-400 py-6 text-center text-sm mt-auto flex flex-col items-center gap-2">
-        <p>Viaje Florida 2026</p>
-        <button onclick="configurarAPI()" class="text-xs text-slate-500 border border-slate-700 p-2 rounded hover:text-white transition-colors">⚙️ Configurar API Key (IA)</button>
+    <footer class="bg-slate-900 text-slate-400 py-8 text-center text-sm mt-auto">
+        <div class="max-w-6xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4">
+            <p class="font-medium tracking-wide">Viaje Florida 2026</p>
+            <button onclick="configurarAPI()" class="text-xs font-medium text-slate-300 bg-slate-800 border border-slate-700 px-4 py-2 rounded-full hover:bg-slate-700 hover:text-white transition-all shadow-sm">⚙️ Configurar API Key (Gemini IA)</button>
+        </div>
     </footer>
 
     <script>
         const appData = {
             activities: [
                 { id: 1, realDate: "2026-03-17", date: "Mar 17/03", city: "Orlando", icon: "🛬", tags: ["orlando", "all"], priority: "Llegada y Check-in. 📍 Walmart/Target para provisiones.", logistics: "Walmart (3250 Vineland Rd) tiene mejores precios que Disney." },
-                { id: 2, realDate: "2026-03-18", date: "Mie 18/03", city: "Orlando", icon: "🏰", tags: ["orlando", "all"], priority: "Magic Kingdom. El más agotador.", adrenaline: "TRON, Space Mountain, Big Thunder Mountain, Tiana's Bayou Adventure.", shows: "Happily Ever After.", logistics: "Hacer fila virtual para TRON a las 7 AM." },
-                { id: 3, realDate: "2026-03-19", date: "Jue 19/03", city: "Orlando", icon: "🌍", tags: ["orlando", "all"], priority: "EPCOT. Comida del mundo.", adrenaline: "Guardians (Cosmic Rewind), Test Track, Mission: SPACE, Soarin'.", shows: "Luminous.", logistics: "Reservar Guardians a las 7 AM." },
-                { id: 4, realDate: "2026-03-20", date: "Vie 20/03", city: "Orlando", icon: "🎬", tags: ["orlando", "all"], priority: "Hollywood Studios.", adrenaline: "Rock 'n' Roller, Tower of Terror, Slinky Dog Dash, Smugglers Run.", shows: "Fantasmic!", logistics: "Directo a Star Wars apenas abre." },
-                { id: 5, realDate: "2026-03-21", date: "Sab 21/03", city: "Orlando", icon: "🦁", tags: ["orlando", "chicas", "chicos", "all"], priority: "Animal Kingdom (Mañana) + 📍 Outlets (Tarde).", chicas: "Vineland Outlets: Sephora, Ross.", chicos: "Boot Barn + Ross (valijas).", adrenaline: "Avatar Flight of Passage, Expedition Everest, Dinosaur, Kali River Rapids.", logistics: "Avatar Flight of Passage es prioridad #1." },
-                { id: 6, realDate: "2026-03-22", date: "Dom 22/03", city: "Orlando", icon: "📦", tags: ["orlando", "chicas", "chicos", "all"], priority: "DÍA DE DESCANSO. 📍 Amazon Hot Bins (Mañana) + Disney Springs (Noche).", chicas: "Florida Mall (Stanley en Dick's).", chicos: "Best Buy + Guitar Center. Noche: Tanqueray's (Blues).", logistics: "Las Pawn Shops cierran hoy; usar locales comerciales." },
-                { id: 7, realDate: "2026-03-23", date: "Lun 23/03", city: "Orlando", icon: "🌌", tags: ["orlando", "chicas", "chicos", "all"], priority: "Epic Universe (Universal). El parque nuevo.", chicas: "T.J. Maxx (Pijamas).", chicos: "Pawn Shops (Pedales) + Old Town Kissimmee.", adrenaline: "Stardust Racers, Monsters Unchained (Drácula/Frankenstein), Mine-Cart Madness.", logistics: "Vayan 1 hora antes; multitudes masivas." },
-                { id: 8, realDate: "2026-03-24", date: "Mar 24/03", city: "Orlando", icon: "🎢", tags: ["orlando", "all"], priority: "Islands of Adventure (Universal). Usar Express Pass.", adrenaline: "VelociCoaster, Hagrid's, The Incredible Hulk, Doctor Doom's Fearfall.", logistics: "Hagrid's no acepta Express; hacerla primero." },
-                { id: 9, realDate: "2026-03-25", date: "Mie 25/03", city: "Orlando", icon: "🌎", tags: ["orlando", "all"], priority: "Universal Studios FL.", adrenaline: "The Mummy, Gringotts, Rip Ride Rockit, Transformers 3D.", shows: "Bourne Stuntacular.", logistics: "Usar Hogwarts Express para cruzar de parque." },
+                { id: 2, realDate: "2026-03-18", date: "Mie 18/03", city: "Orlando", icon: "🏰", tags: ["orlando", "all"], priority: "Magic Kingdom. El más agotador.", adrenaline: "TRON, Space Mountain, Big Thunder.", shows: "Happily Ever After.", logistics: "Hacer fila virtual para TRON a las 7 AM." },
+                { id: 3, realDate: "2026-03-19", date: "Jue 19/03", city: "Orlando", icon: "🌍", tags: ["orlando", "all"], priority: "EPCOT. Comida del mundo.", adrenaline: "Guardians (Cosmic Rewind), Test Track.", shows: "Luminous.", logistics: "Reservar Guardians a las 7 AM." },
+                { id: 4, realDate: "2026-03-20", date: "Vie 20/03", city: "Orlando", icon: "🎬", tags: ["orlando", "all"], priority: "Hollywood Studios.", adrenaline: "Rock 'n' Roller, Tower of Terror, Slinky.", shows: "Fantasmic!", logistics: "Directo a Star Wars apenas abre." },
+                { id: 5, realDate: "2026-03-21", date: "Sab 21/03", city: "Orlando", icon: "🦁", tags: ["orlando", "chicas", "chicos", "all"], priority: "Animal Kingdom (Mañana) + 📍 Outlets (Tarde).", chicas: "Vineland Outlets: Sephora, Ross.", chicos: "Boot Barn + Ross (valijas).", adrenaline: "Avatar Flight of Passage, Expedition Everest.", logistics: "Avatar es prioridad #1 al entrar." },
+                { id: 6, realDate: "2026-03-22", date: "Dom 22/03", city: "Orlando", icon: "📦", tags: ["orlando", "chicas", "chicos", "all"], priority: "DÍA DE DESCANSO. 📍 Amazon Hot Bins + Disney Springs.", chicas: "Florida Mall (Stanley en Dick's).", chicos: "Best Buy + Guitar Center. Noche: Tanqueray's.", logistics: "Las Pawn Shops cierran hoy; usar locales comerciales." },
+                { id: 7, realDate: "2026-03-23", date: "Lun 23/03", city: "Orlando", icon: "🌌", tags: ["orlando", "chicas", "chicos", "all"], priority: "Epic Universe (Universal). El parque nuevo.", chicas: "T.J. Maxx (Pijamas).", chicos: "Pawn Shops (Pedales) + Old Town Kissimmee.", adrenaline: "Stardust Racers, Monsters Unchained.", logistics: "Vayan 1 hora antes; multitudes masivas." },
+                { id: 8, realDate: "2026-03-24", date: "Mar 24/03", city: "Orlando", icon: "🎢", tags: ["orlando", "all"], priority: "Islands of Adventure. Usar Express Pass.", adrenaline: "VelociCoaster, Hagrid's, Hulk.", logistics: "Hagrid's no acepta Express; hacerla primero." },
+                { id: 9, realDate: "2026-03-25", date: "Mie 25/03", city: "Orlando", icon: "🌎", tags: ["orlando", "all"], priority: "Universal Studios FL.", adrenaline: "The Mummy, Gringotts, Rip Ride Rockit.", shows: "Bourne Stuntacular.", logistics: "Usar Hogwarts Express para cruzar de parque." },
                 { id: 10, realDate: "2026-03-26", date: "Jue 26/03", city: "Orlando ➔ Miami", icon: "🚂", tags: ["orlando", "miami", "all"], priority: "Tren Brightline a Miami (Salida mediodía).", logistics: "Llegada a Sunny Isles para relax en la playa." },
-                { id: 11, realDate: "2026-03-27", date: "Vie 27/03", city: "Miami", icon: "🏖️", tags: ["miami", "chicas", "chicos", "all"], priority: "PLAN GRUPAL: 📍 MIAMI BEACH. Ocean Drive y Art Deco.", chicas: "📍 Lincoln Road (Compras).", chicos: "📍 Peterson Harley + Noche Blues en Hollywood Beach.", adrenaline: null, shows: null, logistics: "Miami Beach es ideal para caminar y ver el atardecer juntos." },
-                { id: 12, realDate: "2026-03-28", date: "Sab 28/03", city: "Miami", icon: "🎸", tags: ["miami", "chicas", "chicos", "all"], priority: "Miami: Compras y Relax.", chicas: "📍 Aventura Mall (Opciones 3D en Micro Center).", chicos: "📍 Hard Rock Hotel (Guitarra).", adrenaline: null, shows: null, logistics: "Día libre para dividir el grupo. Aventura Mall está a solo 4km de Sunny Isles." },
+                { id: 11, realDate: "2026-03-27", date: "Vie 27/03", city: "Miami", icon: "🏖️", tags: ["miami", "chicas", "chicos", "all"], priority: "PLAN GRUPAL: 📍 MIAMI BEACH. Ocean Drive y Art Deco.", chicas: "📍 Lincoln Road (Compras).", chicos: "📍 Peterson Harley + Noche Blues.", logistics: "Miami Beach es ideal para caminar y ver el atardecer juntos." },
+                { id: 12, realDate: "2026-03-28", date: "Sab 28/03", city: "Miami", icon: "🎸", tags: ["miami", "chicas", "chicos", "all"], priority: "Miami: Compras y Relax.", chicas: "📍 Aventura Mall.", chicos: "📍 Hard Rock Hotel (Guitarra).", logistics: "Día libre. Aventura Mall está a solo 4km de Sunny Isles." },
                 { id: 13, realDate: "2026-03-29", date: "Dom 29/03", city: "Miami", icon: "🛫", tags: ["miami", "all"], priority: "Playa + Armado de valijas + Aeropuerto.", logistics: "Vuelo 22hs. Salir 4h antes por el tráfico de la I-95." }
             ]
         };
 
+        /* ================= LÓGICA DE IA (GEMINI) ================= */
         async function fetchGemini(promptText) {
             const apiKey = localStorage.getItem('gemini_api_key_viaje');
             if (!apiKey) return null;
-            
             let modelToUse = localStorage.getItem('gemini_working_model');
-            
             if (!modelToUse) {
                 try {
                     const listUrl = `https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`;
-                    const listRes = await fetch(listUrl);
-                    if (listRes.ok) {
-                        const data = await listRes.json();
-                        const validModels = data.models.filter(m => 
-                            m.supportedGenerationMethods && 
-                            m.supportedGenerationMethods.includes("generateContent") &&
-                            m.name.includes("gemini")
-                        );
-                        
+                    const res = await fetch(listUrl);
+                    if (res.ok) {
+                        const data = await res.json();
+                        const valid = data.models.filter(m => m.supportedGenerationMethods?.includes("generateContent") && m.name.includes("gemini"));
                         const prefs = ['gemini-2.5-flash', 'gemini-1.5-flash', 'gemini-pro'];
                         for (let p of prefs) {
-                            let found = validModels.find(m => m.name.includes(p));
-                            if (found) {
-                                modelToUse = found.name.split('models/')[1];
-                                break;
-                            }
+                            let found = valid.find(m => m.name.includes(p));
+                            if (found) { modelToUse = found.name.split('models/')[1]; break; }
                         }
-                        if (!modelToUse && validModels.length > 0) {
-                            modelToUse = validModels[0].name.split('models/')[1];
-                        }
-                        
-                        if (modelToUse) {
-                            localStorage.setItem('gemini_working_model', modelToUse);
-                        }
+                        if (!modelToUse && valid.length > 0) modelToUse = valid[0].name.split('models/')[1];
+                        if (modelToUse) localStorage.setItem('gemini_working_model', modelToUse);
                     }
-                } catch(e) {
-                    console.error("Error GET:", e);
-                }
+                } catch(e) { console.error("Error GET:", e); }
             }
-
-            const fallbackModels = ['gemini-2.5-flash', 'gemini-1.5-flash', 'gemini-1.5-flash-latest', 'gemini-pro'];
-            const models = modelToUse ? [modelToUse, ...fallbackModels.filter(m => m !== modelToUse)] : fallbackModels;
-            
+            const models = modelToUse ? [modelToUse, 'gemini-2.5-flash', 'gemini-1.5-flash', 'gemini-pro'].filter((v,i,a)=>a.indexOf(v)===i) : ['gemini-2.5-flash', 'gemini-1.5-flash', 'gemini-pro'];
             const payload = { contents: [{ parts: [{ text: promptText }] }] };
-
             for (let model of models) {
                 const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
-                
-                let retries = 3;
-                let delay = 1000;
-                let modelFailed = false;
-
+                let retries = 3, delay = 1000, modelFailed = false;
                 for (let i = 0; i < retries; i++) {
                     try {
-                        const response = await fetch(url, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(payload)
-                        });
-                        
+                        const response = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
                         if (response.ok) {
                             const data = await response.json();
                             localStorage.setItem('gemini_working_model', model);
                             return data?.candidates?.[0]?.content?.parts?.[0]?.text || null;
                         }
-                        
                         if (response.status === 404) {
-                            if (model === localStorage.getItem('gemini_working_model')) {
-                                localStorage.removeItem('gemini_working_model');
-                            }
-                            modelFailed = true;
-                            break; 
+                            if (model === localStorage.getItem('gemini_working_model')) localStorage.removeItem('gemini_working_model');
+                            modelFailed = true; break; 
                         }
-
-                        if (response.status === 400 || response.status === 403) {
-                            return "Error: Tu API Key es inválida o no tiene permisos.";
-                        }
-                    } catch (err) {
-                        if (i === retries - 1) console.error("Error de conexión IA:", err);
-                    }
-                    
+                        if (response.status === 400 || response.status === 403) return "Error: Tu API Key es inválida o no tiene permisos.";
+                    } catch (err) { if (i === retries - 1) console.error("Error de conexión IA:", err); }
                     if (modelFailed) break; 
-                    await new Promise(res => setTimeout(res, delay));
-                    delay *= 2;
+                    await new Promise(res => setTimeout(res, delay)); delay *= 2;
                 }
             }
-            return "Hubo un error de conexión. No se encontró un modelo compatible habilitado para tu API Key.";
+            return "Hubo un error de conexión. Verifica tu conexión a internet o la API Key.";
         }
 
         async function getAITips(id) {
@@ -454,70 +433,61 @@
             btn.innerHTML = "<div class='ai-spinner'></div>";
             btn.disabled = true;
             
-            // --- INGENIERÍA DE PROMPT MEJORADA PARA EL CONSERJE ---
-            const prompt = `Actúa como un conserje experto local VIP de Florida.
-            Contexto de los viajeros: Familia argentina de vacaciones (edades mezcladas 30 y 60 años).
-            Día de la consulta: ${act.date}. Ciudad: ${act.city}.
-            Actividad principal planificada para hoy: "${act.priority}".
-            Logística actual: "${act.logistics}".
-            
-            Tarea:
-            1. Recomienda 1 lugar muy específico y bien valorado para comer cerca de esta actividad o en la ruta.
-            2. Dame 1 tip "secreto" o consejo logístico de experto para esta zona (ej: dónde estacionar, mejor horario, o algo que los turistas ignoran).
-            
-            Formato: Responde directo. Tono amistoso pero súper conciso (máximo 4 oraciones en total). Usa HTML simple (<b>, <br>) para formatear. No uses markdown (\`\`\`).`;
+            const prompt = `Actúa como un conserje experto local VIP de Florida. Contexto: Familia argentina de vacaciones. Día: ${act.date}. Ciudad: ${act.city}. Actividad principal: "${act.priority}". Logística: "${act.logistics}". 
+            Tarea: 1. Recomienda 1 lugar muy específico para comer cerca de esta actividad. 2. Dame 1 tip "secreto" de experto (estacionamiento, horarios). Formato: Directo. Tono amistoso. Máx 4 oraciones. HTML simple (<b>, <br>). No markdown.`;
 
             const result = await fetchGemini(prompt);
-            
             if (result && !result.includes("Hubo un error")) {
-                resDiv.innerHTML = `<div class="mt-4 p-4 bg-slate-100 border-l-4 border-blue-500 rounded-r-xl text-sm ai-response"><p class="font-bold text-blue-900 mb-2">🤖 Conserje IA:</p>${result.replace(/```html|```/g, '')}</div>`;
+                resDiv.innerHTML = `<div class="mt-4 p-5 bg-blue-50/80 backdrop-blur-sm border border-blue-100 rounded-2xl text-sm ai-response shadow-sm"><p class="font-extrabold text-blue-900 mb-2 flex items-center gap-2"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2a2 2 0 012 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 017 7h1v2h-1v2a2 2 0 01-2 2H5a2 2 0 01-2-2v-2H2v-2h1a7 7 0 017-7h1V5.73A2 2 0 0110 4a2 2 0 012-2zm-3 8a2 2 0 100 4 2 2 0 000-4zm6 0a2 2 0 100 4 2 2 0 000-4z"/></svg> Conserje IA:</p><div class="text-slate-700 leading-relaxed">${result.replace(/```html|```/g, '')}</div></div>`;
                 btn.style.display = 'none';
             } else {
-                btn.innerHTML = "⚠️ Reintentar";
-                btn.disabled = false;
+                btn.innerHTML = "⚠️ Reintentar IA"; btn.disabled = false;
                 if(result) alert(result);
             }
         }
 
         async function getAIShoppingPhrases(person) {
             const resDiv = document.getElementById('ai-shopping-result');
-            resDiv.innerHTML = "<div class='ai-spinner'></div> Analizando contexto para generar frases exactas...";
+            resDiv.innerHTML = "<div class='flex items-center gap-3'><div class='ai-spinner'></div> <span class='text-slate-500 font-medium'>Generando frases nativas...</span></div>";
             resDiv.classList.remove('hidden');
             
-            // --- INGENIERÍA DE PROMPT MEJORADA PARA COMPRAS ---
-            const ctx = person === 'juan' 
-                ? "Soy un hombre argentino en USA buscando comprar pedales de guitarra boutique (ej. Strymon, Boss), accesorios de música y equipamiento específico de motocicletas (herramientas en Harbor Freight, visores)." 
-                : "Soy una mujer argentina en USA buscando componentes y repuestos para impresoras 3D (filamentos, marca Creality/Bambu), termos/vasos Stanley específicos en Dick's, y ropa/maquillaje en Aventura Mall.";
-                
-            const prompt = `Actúa como un asistente de compras bilingüe (Personal Shopper).
-            Contexto del usuario: ${ctx}
-            
-            Tarea:
-            1. Genera 3 frases en inglés (naturales, educadas y nativas) que el usuario pueda mostrar o leer a un empleado de la tienda para preguntar específicamente por sus artículos y pedir ayuda con el stock.
-            2. Incluye la traducción exacta al español al lado o debajo de cada una.
-            3. Añade 1 consejo súper breve de "cultura de compras" en USA relacionado a esto (ej: cómo preguntar por stock oculto en depósito, temas de impuestos (tax), o cómo buscar clearance/descuentos).
-            
-            Formato: Usa listas en HTML simple (<ul>, <li>, <b>). Respuesta al grano. No uses bloques de código markdown (\`\`\`).`;
+            const ctx = person === 'juan' ? "Hombre argentino comprando pedales boutique (Strymon), y accesorios moto (Harbor Freight)." : "Mujer argentina buscando insumos impresora 3D (Creality), termos Stanley en Dick's, y ropa en Aventura Mall.";
+            const prompt = `Actúa como Personal Shopper bilingüe. Contexto: ${ctx} 
+            Tarea: 1. Genera 3 frases en inglés (naturales, nativas) para que el usuario pregunte a un empleado por sus artículos específicos y pida chequear stock. 2. Traducción al español abajo. 3. Añade 1 consejo súper breve de cultura de compras en USA sobre stock oculto o clearances. Formato: HTML simple (<ul>, <li>, <b>). No markdown.`;
 
             const res = await fetchGemini(prompt);
-            if (res) resDiv.innerHTML = `<p class="font-bold text-purple-900 mb-3 flex items-center gap-2"><span>🛍️</span> Asistente de Compras Inteligente:</p>` + res.replace(/```html|```/g, '');
+            if (res) resDiv.innerHTML = `<p class="font-extrabold text-purple-900 mb-4 flex items-center gap-2"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg> Asistente de Compras Inteligente:</p><div class="text-slate-700 space-y-2 leading-relaxed">${res.replace(/```html|```/g, '')}</div>`;
         }
 
+        /* ================= UI LOGIC ================= */
         function switchTab(id) {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            document.getElementById(`tab-${id}`).classList.add('active');
-            
-            document.querySelectorAll('.tab-btn').forEach(b => {
-                b.classList.remove('active-tab');
-                b.classList.add('inactive-tab');
+            // SOLUCION DEFINITIVA SCROLL: Instanteo al top antes de tocar el DOM
+            window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+
+            // Resetear todos los tabs a oculto
+            document.querySelectorAll('.tab-content').forEach(t => {
+                t.style.display = 'none';
+                t.classList.remove('active');
             });
             
-            const activeBtn = document.getElementById(`btn-tab-${id}`);
-            activeBtn.classList.remove('inactive-tab');
-            activeBtn.classList.add('active-tab');
+            // Estilos de botones (Pills inactivos)
+            document.querySelectorAll('.tab-btn').forEach(b => {
+                b.classList.remove('bg-slate-800', 'text-white', 'shadow-md');
+                b.classList.add('bg-white', 'text-slate-600');
+            });
             
-            // SCROLL TOP PARA SOLUCIONAR QUE SE QUEDABA ABAJO AL CAMBIAR DE PESTAÑA
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            // Activar nuevo tab
+            const activeTab = document.getElementById(`tab-${id}`);
+            activeTab.style.display = 'flex';
+            
+            // Forzar reflow para la animación
+            void activeTab.offsetWidth; 
+            activeTab.classList.add('active');
+            
+            // Botón activo
+            const activeBtn = document.getElementById(`btn-tab-${id}`);
+            activeBtn.classList.remove('bg-white', 'text-slate-600');
+            activeBtn.classList.add('bg-slate-800', 'text-white', 'shadow-md');
             
             if (id === 'itinerario') window.dispatchEvent(new Event('resize'));
         }
@@ -525,69 +495,75 @@
         function renderItinerary(f = "all") {
             const cont = document.getElementById('itinerary-list');
             cont.innerHTML = "";
-            appData.activities.filter(a => f === "all" || a.tags.includes(f)).forEach(a => {
-                const card = document.createElement('div');
-                card.id = `card-${a.realDate}`;
-                card.className = "border-l-4 border-blue-600 bg-slate-50 rounded-r-xl p-5 shadow-sm";
-                
+            appData.activities.filter(a => f === "all" || a.tags.includes(f)).forEach((a, index) => {
+                const cardWrap = document.createElement('div');
+                cardWrap.className = "relative pl-8 md:pl-12 w-full fade-in";
+                cardWrap.style.animationDelay = `${index * 0.05}s`;
+
+                // Node circular de la linea de tiempo (Solo visible en desktop para mejor UI)
+                const node = `<div class="timeline-node hidden sm:block"></div>`;
+
                 let adrHtml = (a.adrenaline || a.shows) ? `
-                    <div class="mt-3 p-3 bg-indigo-50 border border-indigo-100 rounded-lg text-xs">
-                        <p>🎢 <strong>Adrenalina:</strong> ${a.adrenaline || 'N/A'}</p>
-                        <p>✨ <strong>Show:</strong> ${a.shows || 'N/A'}</p>
+                    <div class="mt-4 p-3.5 bg-brand-50/50 rounded-xl border border-brand-100 text-[13px] leading-relaxed">
+                        ${a.adrenaline ? `<p class="mb-1"><span class="font-bold text-brand-800">🎢 Adrenalina:</span> <span class="text-slate-600">${a.adrenaline}</span></p>` : ''}
+                        ${a.shows ? `<p><span class="font-bold text-brand-800">✨ Show:</span> <span class="text-slate-600">${a.shows}</span></p>` : ''}
                     </div>` : '';
                 
                 let split = (a.chicas || a.chicos) ? `
-                    <div class="grid grid-cols-2 gap-2 mt-3 text-xs">
-                        ${a.chicas ? `<div class="p-2 bg-pink-50 border border-pink-100 rounded">🌸 ${a.chicas}</div>` : ''}
-                        ${a.chicos ? `<div class="p-2 bg-orange-50 border border-orange-100 rounded">🏍️ ${a.chicos}</div>` : ''}
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4 text-[13px]">
+                        ${a.chicas ? `<div class="p-3 bg-pink-50/80 border border-pink-100/80 rounded-xl shadow-sm"><span class="block font-bold text-pink-800 mb-0.5">🌸 Chicas</span><span class="text-slate-600">${a.chicas}</span></div>` : ''}
+                        ${a.chicos ? `<div class="p-3 bg-orange-50/80 border border-orange-100/80 rounded-xl shadow-sm"><span class="block font-bold text-orange-800 mb-0.5">🏍️ Chicos</span><span class="text-slate-600">${a.chicos}</span></div>` : ''}
                     </div>` : '';
 
-                card.innerHTML = `
-                    <div class="flex justify-between items-start mb-1">
-                        <h3 class="font-bold text-slate-900">${a.icon} ${a.date}</h3>
-                        <span class="text-xs font-bold bg-slate-200 px-2 py-0.5 rounded">${a.city}</span>
-                    </div>
-                    <p class="text-xs font-bold text-blue-800">Prioridad: ${a.priority}</p>
-                    ${adrHtml} ${split}
-                    <p class="text-xs text-slate-600 mt-2 italic leading-relaxed">💡 ${a.logistics}</p>
-                    <div class="mt-3 text-right">
-                        <button id="btn-ai-${a.id}" onclick="getAITips(${a.id})" class="text-xs bg-white border px-2 py-1 rounded shadow-sm hover:bg-slate-50 transition-colors">✨ Tips IA</button>
-                    </div>
-                    <div id="ai-result-${a.id}"></div>`;
-                cont.appendChild(card);
+                cardWrap.innerHTML = `
+                    ${node}
+                    <div id="card-${a.realDate}" class="bg-white border border-slate-200 rounded-2xl p-5 md:p-6 shadow-sm hover:shadow-md transition-all group relative overflow-hidden">
+                        <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-brand-500 rounded-l-2xl"></div>
+                        
+                        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 mb-3">
+                            <h3 class="font-extrabold text-lg text-slate-900 flex items-center gap-2">
+                                <span class="bg-slate-100 p-1.5 rounded-lg text-lg shadow-sm">${a.icon}</span> ${a.date}
+                            </h3>
+                            <span class="inline-block text-[10px] font-bold bg-slate-100 text-slate-500 px-2.5 py-1 rounded-full uppercase tracking-wider self-start">${a.city}</span>
+                        </div>
+                        
+                        <p class="text-sm font-bold text-slate-800 leading-relaxed mb-1">${a.priority}</p>
+                        
+                        ${adrHtml} ${split}
+                        
+                        <div class="mt-4 flex flex-col sm:flex-row sm:items-end justify-between gap-4 pt-4 border-t border-slate-100">
+                            <p class="text-xs text-slate-500 italic leading-relaxed max-w-lg flex gap-2">
+                                <span class="text-amber-500 not-italic">💡</span> ${a.logistics}
+                            </p>
+                            <button id="btn-ai-${a.id}" onclick="getAITips(${a.id})" class="shrink-0 text-xs font-bold text-brand-600 bg-brand-50 border border-brand-200 px-3 py-2 rounded-xl shadow-sm hover:bg-brand-500 hover:text-white transition-all focus:ring-2 focus:ring-brand-300 outline-none flex items-center justify-center gap-1.5">
+                                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm0 18a8 8 0 110-16 8 8 0 010 16zm-1-5.5h2v2h-2v-2zm1-9.5a3.5 3.5 0 00-3.5 3.5h2a1.5 1.5 0 013 0c0 1.5-2 2-2 3.5v1h2v-1c0-1.5 2-2 2-3.5A3.5 3.5 0 0012 5z"/></svg> 
+                                Tips IA
+                            </button>
+                        </div>
+                        <div id="ai-result-${a.id}"></div>
+                    </div>`;
+                cont.appendChild(cardWrap);
             });
         }
 
         function initCharts() {
+            Chart.defaults.font.family = "'Inter', sans-serif";
+            Chart.defaults.color = '#64748b';
+
             new Chart(document.getElementById('activityChart'), {
                 type: 'doughnut',
-                data: { 
-                    labels: ['Parques', 'Compras', 'Relax'], 
-                    datasets: [{ 
-                        data: [50, 35, 15], 
-                        backgroundColor: ['#3b82f6','#f97316','#10b981'] 
-                    }] 
-                },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } } } }
+                data: { labels: ['Parques (Prioridad)', 'Compras & Outlets', 'Descanso/Paseo'], datasets: [{ data: [50, 35, 15], backgroundColor: ['#3b82f6','#f97316','#10b981'], borderWidth: 0, hoverOffset: 4 }] },
+                options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20, font: { size: 12, weight: '500' } } } } }
             });
-            const commonScales = { 
-                x: { 
-                    beginAtZero: true,
-                    title: { display: true, text: 'Distancia en Kilómetros (km)', font: { size: 12, weight: 'bold' }, color: '#475569' }
-                }, 
-                y: { grid: { display: false } } 
-            };
-            const commonPlugins = {
-                legend: { display: false },
-                tooltip: { callbacks: { label: function(context) { return context.raw + ' km'; } } }
-            };
+            const commonScales = { x: { beginAtZero: true, grid: { color: '#f1f5f9' }, border: { dash: [4, 4] } }, y: { grid: { display: false }, ticks: { font: { weight: '500' } } } };
+            const commonPlugins = { legend: { display: false }, tooltip: { backgroundColor: 'rgba(15, 23, 42, 0.9)', padding: 10, cornerRadius: 8, callbacks: { label: function(c) { return ' ' + c.raw + ' km'; } } } };
 
             new Chart(document.getElementById('orlandoDistancesChart'), {
-                type: 'bar', data: { labels: ['Outlets','Walmart','H.Studios','Epcot','Florida Mall','M. Kingdom','G. Center','Universal','Epic Univ','Orlando Harley'], datasets: [{ data: [5, 5.5, 7.1, 8.2, 10, 12.5, 15, 18, 19.5, 20], backgroundColor: '#3b82f6', borderRadius: 4 }] },
+                type: 'bar', data: { labels: ['Outlets','Walmart','H.Studios','Epcot','Florida Mall','M. Kingdom','G. Center','Universal','Epic Univ','Orlando Harley'], datasets: [{ data: [5, 5.5, 7.1, 8.2, 10, 12.5, 15, 18, 19.5, 20], backgroundColor: '#3b82f6', borderRadius: 6, barThickness: 'flex' }] },
                 options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, scales: commonScales, plugins: commonPlugins }
             });
             new Chart(document.getElementById('miamiDistancesChart'), {
-                type: 'bar', data: { labels: ['Aventura Mall','Gulfstream','Hollywood Broadwalk','Peterson Harley','Hard Rock','MIA Airport','Sawgrass Mills', 'Micro Center (3D)'], datasets: [{ data: [4, 5.5, 8.5, 12, 20, 31, 35, 35], backgroundColor: '#0ea5e9', borderRadius: 4 }] },
+                type: 'bar', data: { labels: ['Aventura Mall','Gulfstream','Hollywood Broadwalk','Peterson Harley','Hard Rock','MIA Airport','Sawgrass Mills', 'Micro Center (3D)'], datasets: [{ data: [4, 5.5, 8.5, 12, 20, 31, 35, 35], backgroundColor: '#0ea5e9', borderRadius: 6, barThickness: 'flex' }] },
                 options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, scales: commonScales, plugins: commonPlugins }
             });
         }
@@ -597,14 +573,14 @@
             const now = new Date(); now.setHours(0,0,0,0);
             const start = new Date("2026-03-17T00:00:00");
             const end = new Date("2026-03-29T00:00:00");
+            banner.classList.remove('hidden');
             if (now < start) {
                 const diff = Math.ceil((start - now) / (86400000));
-                banner.innerText = `⏳ ¡Faltan ${diff} días para el viaje!`;
+                banner.innerText = `⏳ ¡Faltan ${diff} días para el viaje! Preparen las valijas.`;
             } else if (now >= start && now <= end) {
                 const iso = now.toISOString().split('T')[0];
-                banner.innerHTML = `<button onclick="scrollToToday('${iso}')" class="font-bold underline w-full py-1">📍 Ver qué toca HOY</button>`;
-                banner.className = "bg-orange-500 hover:bg-orange-600 transition-colors cursor-pointer text-white text-center text-xs font-semibold shadow-inner";
-            } else banner.style.display = 'none';
+                banner.innerHTML = `<button onclick="scrollToToday('${iso}')" class="font-bold underline w-full py-1 hover:text-slate-100 transition-colors">📍 Tocar para ver itinerario de HOY</button>`;
+            } else banner.classList.add('hidden');
         }
 
         function scrollToToday(d) {
@@ -612,13 +588,15 @@
             setTimeout(() => {
                 const el = document.getElementById(`card-${d}`);
                 if (el) {
-                    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    el.classList.add('ring-2', 'ring-blue-600', 'bg-blue-50');
-                    setTimeout(() => el.classList.remove('ring-2', 'ring-blue-600', 'bg-blue-50'), 2000);
+                    const y = el.getBoundingClientRect().top + window.scrollY - 100;
+                    window.scrollTo({top: y, behavior: 'smooth'});
+                    el.classList.add('ring-4', 'ring-brand-400', 'ring-offset-2');
+                    setTimeout(() => el.classList.remove('ring-4', 'ring-brand-400', 'ring-offset-2'), 2500);
                 }
-            }, 200);
+            }, 300);
         }
 
+        /* ================= STORAGE ================= */
         function saveChecklist() {
             const data = {};
             document.querySelectorAll('input[type="checkbox"]').forEach(c => { if(c.id) data[c.id] = c.checked; });
@@ -630,17 +608,15 @@
             for(const id in saved) { const el = document.getElementById(id); if(el) el.checked = saved[id]; }
         }
 
-        function limpiarListas() {
-            if(confirm("¿Seguro que quieres borrar todo el progreso de las listas de compras?")) {
-                document.querySelectorAll('input[type="checkbox"]').forEach(c => c.checked = false);
-                localStorage.removeItem('floridaTripChecklist');
-            }
+        function limpiarListas(prefix) {
+            document.querySelectorAll(`input[id^="chk-${prefix}"]`).forEach(c => c.checked = false);
+            saveChecklist();
         }
 
         function configurarAPI() {
             const k = prompt("Gemini API Key:", localStorage.getItem('gemini_api_key_viaje') || "");
             if (k !== null) {
-                localStorage.removeItem('gemini_working_model'); // Limpiar modelo cacheado al cambiar la clave
+                localStorage.removeItem('gemini_working_model');
                 if(k.trim() === "") localStorage.removeItem('gemini_api_key_viaje');
                 else localStorage.setItem('gemini_api_key_viaje', k.trim());
                 location.reload();
@@ -652,10 +628,16 @@
             initCharts();
             initTimeBanner();
             loadChecklist();
+            
+            // Filtros interactivos
             document.querySelectorAll('.filter-btn').forEach(b => {
                 b.onclick = (e) => {
-                    document.querySelectorAll('.filter-btn').forEach(x => x.classList.replace('bg-slate-800', 'bg-slate-100'));
-                    e.target.classList.replace('bg-slate-100', 'bg-slate-800');
+                    document.querySelectorAll('.filter-btn').forEach(x => {
+                        x.classList.remove('bg-white', 'shadow-sm', 'text-slate-800');
+                        x.classList.add('text-slate-500');
+                    });
+                    e.target.classList.remove('text-slate-500');
+                    e.target.classList.add('bg-white', 'shadow-sm', 'text-slate-800');
                     renderItinerary(e.target.dataset.filter);
                 };
             });
