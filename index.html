@@ -171,6 +171,7 @@
                             <li>✅ 1 Jean puesto + 1 Bermuda en valija.</li>
                             <li>✅ Bermuda.</li>
                             <li>✅ Powerbank obligatorio.</li>
+                            <li>⚠️ No llevar cascos ni herramientas (comprar allá).</li>
                         </ul>
                     </div>
                     <div class="bg-pink-50 border border-pink-200 rounded-xl p-5 shadow-sm">
@@ -221,21 +222,21 @@
                             <label class="flex items-start gap-2 cursor-pointer hover:bg-slate-50 p-1 rounded"><input type="checkbox" id="chk-s-3" onchange="saveChecklist()" class="mt-1 accent-pink-500"> <span>Ropa (Aventura/Outlets)</span></label>
                             <label class="flex items-start gap-2 cursor-pointer hover:bg-slate-50 p-1 rounded"><input type="checkbox" id="chk-s-4" onchange="saveChecklist()" class="mt-1 accent-pink-500"> <span>Auriculares Inalámbricos</span></label>
                         </div>
-                        <button onclick="limpiarListas()" class="absolute top-4 right-4 text-[10px] text-slate-400 hover:text-red-500 transition-colors">Limpiar</button>
+                        <button onclick="limpiarListas()" class="absolute top-4 right-4 text-xs text-slate-400 hover:text-red-500 transition-colors">Limpiar</button>
                     </div>
                     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 relative">
                         <h3 class="font-bold border-b pb-2 mb-4 text-pink-700"> Lizi </h3>
                         <div class="space-y-2 text-sm" id="checklist-lizi">
                             <label class="flex items-start gap-2 cursor-pointer hover:bg-slate-50 p-1 rounded"><input type="checkbox" id="chk-l-1" onchange="saveChecklist()" class="mt-1 accent-purple-500"> <span class="font-bold text-purple-700">Cosas Impresora 3D (Filamento/Repuestos/Pico)</span></label>
                         </div>
-                        <button onclick="limpiarListas()" class="absolute top-4 right-4 text-[10px] text-slate-400 hover:text-red-500 transition-colors">Limpiar</button>
+                        <button onclick="limpiarListas()" class="absolute top-4 right-4 text-xs text-slate-400 hover:text-red-500 transition-colors">Limpiar</button>
                     </div>
                     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 relative">
                         <h3 class="font-bold border-b pb-2 mb-4 text-pink-700"> Julian </h3>
                         <div class="space-y-2 text-sm" id="checklist-julian">
-                            <label class="flex items-start gap-2 cursor-pointer hover:bg-slate-50 p-1 rounded"><input type="checkbox" id="chk-l-1" onchange="saveChecklist()" class="mt-1 accent-purple-500"> <span class="font-bold text-purple-700">Iphone</span></label>
+                            <label class="flex items-start gap-2 cursor-pointer hover:bg-slate-50 p-1 rounded"><input type="checkbox" id="chk-j-iphone" onchange="saveChecklist()" class="mt-1 accent-purple-500"> <span class="font-bold text-purple-700">Iphone</span></label>
                         </div>
-                        <button onclick="limpiarListas()" class="absolute top-4 right-4 text-[10px] text-slate-400 hover:text-red-500 transition-colors">Limpiar</button>
+                        <button onclick="limpiarListas()" class="absolute top-4 right-4 text-xs text-slate-400 hover:text-red-500 transition-colors">Limpiar</button>
                     </div>
                 </div>
                 
@@ -536,7 +537,7 @@
                 card.innerHTML = `
                     <div class="flex justify-between items-start mb-1">
                         <h3 class="font-bold text-slate-900">${a.icon} ${a.date}</h3>
-                        <span class="text-[10px] font-bold bg-slate-200 px-2 py-0.5 rounded">${a.city}</span>
+                        <span class="text-xs font-bold bg-slate-200 px-2 py-0.5 rounded">${a.city}</span>
                     </div>
                     <p class="text-xs font-bold text-blue-800">Prioridad: ${a.priority}</p>
                     ${adrHtml} ${split}
