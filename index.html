@@ -54,10 +54,9 @@
         .tab-btn.inactive-tab { color: #64748b; font-weight: 500; }
         .tab-btn.inactive-tab:hover { color: #3b82f6; background-color: #f8fafc; }
 
-        /* NUEVO: Efecto de tachado para las compras */
         input[type="checkbox"]:checked + span {
             text-decoration: line-through;
-            color: #94a3b8; /* slate-400 */
+            color: #94a3b8;
             transition: all 0.2s ease;
         }
         input[type="checkbox"] + span {
@@ -178,7 +177,7 @@
                             <li>✅ Ropa liviana para 4 días.</li>
                             <li>✅ Zapatillas de parque + sandalias cómodas.</li>
                             <li>✅ Cosmética pequeña (comprar Sephora allá).</li>
-                            <li>⚠️ Dejar espacio para Stanley y ropa de Aventura Mall.</li>
+                            <li>⚠️ Dejar espacio para Stanley, 3D y ropa de Aventura Mall.</li>
                         </ul>
                     </div>
                 </div>
@@ -192,12 +191,12 @@
                     <p class="text-slate-300 text-sm mt-1">Checklist personal de Juan y Sofi.</p>
                 </div>
                 <div class="flex gap-2 w-full md:w-auto">
-                    <button onclick="getAIShoppingPhrases('juan')" class="flex-1 md:flex-none bg-orange-600 hover:bg-orange-500 transition-colors text-white px-3 py-2 rounded text-xs">✨ Tips Frases Juan</button>
-                    <button onclick="getAIShoppingPhrases('sofi')" class="flex-1 md:flex-none bg-pink-600 hover:bg-pink-500 transition-colors text-white px-3 py-2 rounded text-xs">✨ Tips Frases Sofi</button>
+                    <button onclick="getAIShoppingPhrases('juan')" class="flex-1 md:flex-none bg-orange-600 hover:bg-orange-500 transition-colors text-white px-3 py-2 rounded text-xs shadow-sm">✨ Tips Frases Juan</button>
+                    <button onclick="getAIShoppingPhrases('sofi')" class="flex-1 md:flex-none bg-pink-600 hover:bg-pink-500 transition-colors text-white px-3 py-2 rounded text-xs shadow-sm">✨ Tips Frases Sofi</button>
                 </div>
             </div>
             
-            <div id="ai-shopping-result" class="hidden p-4 bg-white text-slate-800 rounded-lg text-sm ai-response border-l-4 border-purple-500 shadow-sm"></div>
+            <div id="ai-shopping-result" class="hidden p-5 bg-white text-slate-800 rounded-xl text-sm ai-response border-l-4 border-purple-500 shadow-md"></div>
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div class="lg:col-span-1 flex flex-col gap-6">
@@ -212,12 +211,13 @@
                         </div>
                     </div>
                     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 relative">
-                        <h3 class="font-bold border-b pb-2 mb-4 text-pink-700">💄 Sofi</h3>
+                        <h3 class="font-bold border-b pb-2 mb-4 text-pink-700">💄 Sofi (Mamá)</h3>
                         <div class="space-y-2 text-sm" id="checklist-sofi">
                             <label class="flex items-start gap-2 cursor-pointer hover:bg-slate-50 p-1 rounded"><input type="checkbox" id="chk-s-1" onchange="saveChecklist()" class="mt-1 accent-pink-500"> <span>Anteojos de Sol</span></label>
                             <label class="flex items-start gap-2 cursor-pointer hover:bg-slate-50 p-1 rounded"><input type="checkbox" id="chk-s-2" onchange="saveChecklist()" class="mt-1 accent-pink-500"> <span>Termo y Vaso Stanley (Dick's)</span></label>
                             <label class="flex items-start gap-2 cursor-pointer hover:bg-slate-50 p-1 rounded"><input type="checkbox" id="chk-s-3" onchange="saveChecklist()" class="mt-1 accent-pink-500"> <span>Ropa (Aventura/Outlets)</span></label>
                             <label class="flex items-start gap-2 cursor-pointer hover:bg-slate-50 p-1 rounded"><input type="checkbox" id="chk-s-4" onchange="saveChecklist()" class="mt-1 accent-pink-500"> <span>Auriculares Inalámbricos</span></label>
+                            <label class="flex items-start gap-2 cursor-pointer hover:bg-slate-50 p-1 rounded"><input type="checkbox" id="chk-s-5" onchange="saveChecklist()" class="mt-1 accent-purple-500"> <span class="font-bold text-purple-700">Cosas Impresora 3D (Filamento/Repuestos)</span></label>
                         </div>
                         <button onclick="limpiarListas()" class="absolute top-4 right-4 text-[10px] text-slate-400 hover:text-red-500 transition-colors">Limpiar</button>
                     </div>
@@ -226,12 +226,13 @@
                 <div class="lg:col-span-2 flex flex-col gap-6">
                     <div class="bg-yellow-50 border border-yellow-200 rounded-2xl p-5 shadow-sm">
                         <h3 class="font-bold text-yellow-900 text-sm flex items-center gap-2">⚠️ Tip Investigativo: Compras de Nicho</h3>
-                        <p class="text-xs text-yellow-800 mt-1">El <strong>Celular Oppo</strong> y pedales boutique a veces no tienen stock físico. Compren por Amazon antes del viaje y envíen a un <strong>Amazon Locker</strong> cercano y gratuito, ya que los hoteles cobran por recibir paquetes.</p>
+                        <p class="text-xs text-yellow-800 mt-1">El <strong>Celular Oppo</strong>, pedales boutique y algunos <strong>filamentos 3D raros</strong> a veces no tienen stock físico. Compren por Amazon antes del viaje y envíen a un <strong>Amazon Locker</strong> cercano y gratuito.</p>
                     </div>
 
                     <div class="bg-blue-50 border border-blue-200 rounded-2xl p-5 shadow-sm">
                         <h3 class="font-bold text-blue-900 text-lg mb-4 flex items-center gap-2">🏰 Ranking Orlando (Desde Worldquest Resort)</h3>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Bares -->
                             <div class="bg-white p-4 rounded-xl shadow-sm border border-blue-100 md:col-span-2">
                                 <h4 class="font-bold text-sm text-slate-800 border-b pb-1 mb-2">🍻 Bares de Blues y Rock</h4>
                                 <ul class="text-xs text-slate-700 space-y-3">
@@ -240,7 +241,7 @@
                                     <li><span class="text-lg">🥈</span> <strong>House of Blues</strong> | 📍 Disney Springs | 🚗 4 km.<br><span class="text-slate-500"><strong>Por qué ir:</strong> Súper cerca. Excelente sonido en el patio (Front Porch), ideal para descansar.</span></li>
                                 </ul>
                             </div>
-
+                            <!-- Música -->
                             <div class="bg-white p-4 rounded-xl shadow-sm border border-blue-100">
                                 <h4 class="font-bold text-sm text-slate-800 border-b pb-1 mb-2">🎸 Música y Pedales</h4>
                                 <ul class="text-xs text-slate-700 space-y-3">
@@ -248,22 +249,29 @@
                                     <li><span class="text-lg">🥈</span> <strong>La Familia Pawn</strong> | 🚗 16 km.<br><span class="text-slate-500"><strong>Por qué ir:</strong> Casa de empeño en la misma ruta que el Guitar Center para cazar gangas.</span></li>
                                 </ul>
                             </div>
-
+                            <!-- Motos -->
                             <div class="bg-white p-4 rounded-xl shadow-sm border border-blue-100">
                                 <h4 class="font-bold text-sm text-slate-800 border-b pb-1 mb-2">🏍️ Motos y Herramientas</h4>
                                 <ul class="text-xs text-slate-700 space-y-3">
                                     <li><span class="text-lg">🏆</span> <strong>Orlando Harley-Davidson</strong> | 🚗 20 km.<br><span class="text-slate-500"><strong>Por qué ir:</strong> Es la "fábrica histórica". Ícono mundial para ropa biker.</span></li>
                                     <li><span class="text-lg">🥇</span> <strong>Harbor Freight Tools</strong> | 🚗 8 km.<br><span class="text-slate-500"><strong>Por qué ir:</strong> 🛠️ ¡FUNDAMENTAL! Paraíso de herramientas buenas y baratas (destornilladores).</span></li>
-                                    <li><span class="text-lg">🥈</span> <strong>Cycle Gear</strong> | 🚗 14 km.<br><span class="text-slate-500"><strong>Por qué ir:</strong> Visores LS2 y protecciones reales.</span></li>
                                 </ul>
                             </div>
-
-                            <div class="bg-white p-4 rounded-xl shadow-sm border border-blue-100 md:col-span-2">
-                                <h4 class="font-bold text-sm text-slate-800 border-b pb-1 mb-2">💄 Moda, Stanley y Tecnología</h4>
+                            <!-- Tecnología / 3D Orlando -->
+                            <div class="bg-white p-4 rounded-xl shadow-sm border border-blue-100">
+                                <h4 class="font-bold text-sm text-purple-800 border-b pb-1 mb-2">💻 Tecnología & Maker (3D)</h4>
                                 <ul class="text-xs text-slate-700 space-y-3">
-                                    <li><span class="text-lg">🥇</span> <strong>Florida Mall (Apple, Primark, Dick's)</strong> | 🚗 10-15 km.<br><span class="text-slate-500"><strong>Por qué ir:</strong> 🏆 EL COMBO PERFECTO. Dick's (para Stanley), Primark (ropa baratísima), y Apple Store (AirTags).</span></li>
-                                    <li><span class="text-lg">🥇</span> <strong>Vineland Premium Outlets</strong> | 🚗 5 km.<br><span class="text-slate-500"><strong>Por qué ir:</strong> Insuperable para marcas de lujo, Levi's, anteojos y maquillaje.</span></li>
-                                    <li><span class="text-lg">🥇</span> <strong>ROSS / T.J. Maxx / Burlington</strong> | 🚗 5 km.<br><span class="text-slate-500"><strong>Por qué ir:</strong> Ross para Carry-ons baratos. T.J. Maxx para anteojos/pijamas y Burlington para abrigos.</span></li>
+                                    <li><span class="text-lg">💡</span> <strong>Amazon Locker</strong><br><span class="text-slate-500"><strong>Por qué ir:</strong> En Orlando las tiendas físicas de 3D son escasas. Compra en Amazon y envía aquí.</span></li>
+                                    <li><span class="text-lg">🥈</span> <strong>Best Buy (Florida Mall)</strong> | 🚗 10 km.<br><span class="text-slate-500"><strong>Por qué ir:</strong> Tienen stock básico de algunas cosas 3D y tecnología general.</span></li>
+                                </ul>
+                            </div>
+                            <!-- Moda -->
+                            <div class="bg-white p-4 rounded-xl shadow-sm border border-blue-100">
+                                <h4 class="font-bold text-sm text-slate-800 border-b pb-1 mb-2">💄 Moda, Stanley y General</h4>
+                                <ul class="text-xs text-slate-700 space-y-3">
+                                    <li><span class="text-lg">🥇</span> <strong>Florida Mall (Primark, Dick's)</strong> | 🚗 10-15 km.<br><span class="text-slate-500"><strong>Por qué ir:</strong> Dick's (para Stanley), Primark (ropa baratísima) y Apple Store.</span></li>
+                                    <li><span class="text-lg">🥇</span> <strong>Vineland Premium Outlets</strong> | 🚗 5 km.<br><span class="text-slate-500"><strong>Por qué ir:</strong> Insuperable para lujo y maquillaje.</span></li>
+                                    <li><span class="text-lg">🥇</span> <strong>ROSS / T.J. Maxx</strong> | 🚗 5 km.<br><span class="text-slate-500"><strong>Por qué ir:</strong> Ross para valijas. T.J. Maxx para anteojos/pijamas.</span></li>
                                 </ul>
                             </div>
                         </div>
@@ -272,14 +280,21 @@
                     <div class="bg-teal-50 border border-teal-200 rounded-2xl p-5 shadow-sm">
                         <h3 class="font-bold text-teal-900 text-lg mb-4 flex items-center gap-2">🏖️ Ranking Miami (Desde Sunny Isles)</h3>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            
+                            <!-- Gigante Compras -->
                             <div class="bg-white p-4 rounded-xl shadow-sm border border-teal-100 md:col-span-2">
                                 <h4 class="font-bold text-sm text-slate-800 border-b pb-1 mb-2">🛍️ El Gigante de las Compras</h4>
                                 <ul class="text-xs text-slate-700 space-y-3">
                                     <li><span class="text-lg">🏆</span> <strong>Sawgrass Mills (Sunrise)</strong> | 📍 12801 W Sunrise Blvd | 🚗 35 km.<br><span class="text-slate-500"><strong>Por qué ir:</strong> IMPRESCINDIBLE. Es el outlet más grande de EE.UU. Resuelven TODAS las compras del grupo aquí. Vale la pena el viaje de 40 mins.</span></li>
                                 </ul>
                             </div>
-
+                            <!-- Impresión 3D Miami -->
+                            <div class="bg-white p-4 rounded-xl shadow-sm border border-teal-100 md:col-span-2">
+                                <h4 class="font-bold text-sm text-purple-800 border-b pb-1 mb-2">🖨️ Tecnología e Impresión 3D</h4>
+                                <ul class="text-xs text-slate-700 space-y-3">
+                                    <li><span class="text-lg">🏆</span> <strong>Micro Center (Miami)</strong> | 📍 7795 W Flagler St | 🚗 35 km.<br><span class="text-slate-500"><strong>Por qué ir:</strong> EL PARAÍSO PARA TU MAMÁ. Es la mejor tienda de tecnología de USA. Tienen pasillos enteros dedicados a <strong>Impresoras 3D (Bambu, Creality), repuestos y paredes de filamentos</strong> de todos los colores. ¡Visita súper obligatoria!</span></li>
+                                </ul>
+                            </div>
+                            <!-- Bares -->
                             <div class="bg-white p-4 rounded-xl shadow-sm border border-teal-100">
                                 <h4 class="font-bold text-sm text-slate-800 border-b pb-1 mb-2">🍻 Bares Musicales y Paseos</h4>
                                 <ul class="text-xs text-slate-700 space-y-3">
@@ -287,7 +302,7 @@
                                     <li><span class="text-lg">🥈</span> <strong>Seminole Hard Rock Hotel</strong> | 🚗 20 km.<br><span class="text-slate-500"><strong>Por qué ir:</strong> Arquitectura asombrosa de guitarra. Museo y casino.</span></li>
                                 </ul>
                             </div>
-
+                            <!-- Moda Miami -->
                             <div class="bg-white p-4 rounded-xl shadow-sm border border-teal-100">
                                 <h4 class="font-bold text-sm text-slate-800 border-b pb-1 mb-2">🛍️ Moda (Cerca) y Biker</h4>
                                 <ul class="text-xs text-slate-700 space-y-3">
@@ -295,7 +310,6 @@
                                     <li><span class="text-lg">🥇</span> <strong>Peterson's Harley-Davidson</strong> | 🚗 12 km.<br><span class="text-slate-500"><strong>Por qué ir:</strong> Concesionario histórico ideal para la remera de recuerdo.</span></li>
                                 </ul>
                             </div>
-
                         </div>
                     </div>
 
@@ -313,17 +327,17 @@
         const appData = {
             activities: [
                 { id: 1, realDate: "2026-03-17", date: "Mar 17/03", city: "Orlando", icon: "🛬", tags: ["orlando", "all"], priority: "Llegada y Check-in. 📍 Walmart/Target para provisiones.", logistics: "Walmart (3250 Vineland Rd) tiene mejores precios que Disney." },
-                { id: 2, realDate: "2026-03-18", date: "Mie 18/03", city: "Orlando", icon: "🏰", tags: ["orlando", "all"], priority: "Magic Kingdom. El más agotador.", adrenaline: "TRON, Space Mountain.", shows: "Happily Ever After.", logistics: "Hacer fila virtual para TRON a las 7 AM." },
-                { id: 3, realDate: "2026-03-19", date: "Jue 19/03", city: "Orlando", icon: "🌍", tags: ["orlando", "all"], priority: "EPCOT. Comida del mundo.", adrenaline: "Guardians (Cosmic Rewind).", shows: "Luminous.", logistics: "Reservar Guardians a las 7 AM." },
-                { id: 4, realDate: "2026-03-20", date: "Vie 20/03", city: "Orlando", icon: "🎬", tags: ["orlando", "all"], priority: "Hollywood Studios.", adrenaline: "Rock 'n' Roller, Tower of Terror.", shows: "Fantasmic!", logistics: "Directo a Star Wars apenas abre." },
-                { id: 5, realDate: "2026-03-21", date: "Sab 21/03", city: "Orlando", icon: "🦁", tags: ["orlando", "chicas", "chicos", "all"], priority: "Animal Kingdom (Mañana) + 📍 Outlets (Tarde).", chicas: "Vineland Outlets: Sephora, Ross.", chicos: "Boot Barn + Ross (valijas).", adrenaline: "Avatar, Expedition Everest.", logistics: "Avatar Flight of Passage es prioridad #1." },
+                { id: 2, realDate: "2026-03-18", date: "Mie 18/03", city: "Orlando", icon: "🏰", tags: ["orlando", "all"], priority: "Magic Kingdom. El más agotador.", adrenaline: "TRON, Space Mountain, Big Thunder Mountain, Tiana's Bayou Adventure.", shows: "Happily Ever After.", logistics: "Hacer fila virtual para TRON a las 7 AM." },
+                { id: 3, realDate: "2026-03-19", date: "Jue 19/03", city: "Orlando", icon: "🌍", tags: ["orlando", "all"], priority: "EPCOT. Comida del mundo.", adrenaline: "Guardians (Cosmic Rewind), Test Track, Mission: SPACE, Soarin'.", shows: "Luminous.", logistics: "Reservar Guardians a las 7 AM." },
+                { id: 4, realDate: "2026-03-20", date: "Vie 20/03", city: "Orlando", icon: "🎬", tags: ["orlando", "all"], priority: "Hollywood Studios.", adrenaline: "Rock 'n' Roller, Tower of Terror, Slinky Dog Dash, Smugglers Run.", shows: "Fantasmic!", logistics: "Directo a Star Wars apenas abre." },
+                { id: 5, realDate: "2026-03-21", date: "Sab 21/03", city: "Orlando", icon: "🦁", tags: ["orlando", "chicas", "chicos", "all"], priority: "Animal Kingdom (Mañana) + 📍 Outlets (Tarde).", chicas: "Vineland Outlets: Sephora, Ross.", chicos: "Boot Barn + Ross (valijas).", adrenaline: "Avatar Flight of Passage, Expedition Everest, Dinosaur, Kali River Rapids.", logistics: "Avatar Flight of Passage es prioridad #1." },
                 { id: 6, realDate: "2026-03-22", date: "Dom 22/03", city: "Orlando", icon: "📦", tags: ["orlando", "chicas", "chicos", "all"], priority: "DÍA DE DESCANSO. 📍 Amazon Hot Bins (Mañana) + Disney Springs (Noche).", chicas: "Florida Mall (Stanley en Dick's).", chicos: "Best Buy + Guitar Center. Noche: Tanqueray's (Blues).", logistics: "Las Pawn Shops cierran hoy; usar locales comerciales." },
-                { id: 7, realDate: "2026-03-23", date: "Lun 23/03", city: "Orlando", icon: "🌌", tags: ["orlando", "chicas", "chicos", "all"], priority: "Epic Universe (Universal). El parque nuevo.", chicas: "T.J. Maxx (Pijamas).", chicos: "Pawn Shops (Pedales) + Old Town Kissimmee.", adrenaline: "Stardust Racers.", logistics: "Vayan 1 hora antes; multitudes masivas." },
-                { id: 8, realDate: "2026-03-24", date: "Mar 24/03", city: "Orlando", icon: "🎢", tags: ["orlando", "all"], priority: "Islands of Adventure (Universal). Usar Express Pass.", adrenaline: "VelociCoaster, Hagrid's.", logistics: "Hagrid's no acepta Express; hacerla primero." },
-                { id: 9, realDate: "2026-03-25", date: "Mie 25/03", city: "Orlando", icon: "🌎", tags: ["orlando", "all"], priority: "Universal Studios FL.", adrenaline: "The Mummy, Gringotts.", shows: "Bourne Stuntacular.", logistics: "Usar Hogwarts Express para cruzar de parque." },
+                { id: 7, realDate: "2026-03-23", date: "Lun 23/03", city: "Orlando", icon: "🌌", tags: ["orlando", "chicas", "chicos", "all"], priority: "Epic Universe (Universal). El parque nuevo.", chicas: "T.J. Maxx (Pijamas).", chicos: "Pawn Shops (Pedales) + Old Town Kissimmee.", adrenaline: "Stardust Racers, Monsters Unchained (Drácula/Frankenstein), Mine-Cart Madness.", logistics: "Vayan 1 hora antes; multitudes masivas." },
+                { id: 8, realDate: "2026-03-24", date: "Mar 24/03", city: "Orlando", icon: "🎢", tags: ["orlando", "all"], priority: "Islands of Adventure (Universal). Usar Express Pass.", adrenaline: "VelociCoaster, Hagrid's, The Incredible Hulk, Doctor Doom's Fearfall.", logistics: "Hagrid's no acepta Express; hacerla primero." },
+                { id: 9, realDate: "2026-03-25", date: "Mie 25/03", city: "Orlando", icon: "🌎", tags: ["orlando", "all"], priority: "Universal Studios FL.", adrenaline: "The Mummy, Gringotts, Rip Ride Rockit, Transformers 3D.", shows: "Bourne Stuntacular.", logistics: "Usar Hogwarts Express para cruzar de parque." },
                 { id: 10, realDate: "2026-03-26", date: "Jue 26/03", city: "Orlando ➔ Miami", icon: "🚂", tags: ["orlando", "miami", "all"], priority: "Tren Brightline a Miami (Salida mediodía).", logistics: "Llegada a Sunny Isles para relax en la playa." },
-                { id: 11, realDate: "2026-03-27", date: "Vie 27/03", city: "Miami", icon: "🎸", tags: ["miami", "chicas", "chicos", "all"], priority: "Miami: Compras y Relax.", chicas: "📍 Aventura Mall.", chicos: "📍 Hard Rock Hotel (Guitarra).", logistics: "Aventura Mall está a solo 4km de Sunny Isles." },
-                { id: 12, realDate: "2026-03-28", date: "Sab 28/03", city: "Miami", icon: "🏖️", tags: ["miami", "chicas", "chicos", "all"], priority: "PLAN GRUPAL: 📍 MIAMI BEACH. Ocean Drive y Art Deco.", chicas: "📍 Lincoln Road (Compras).", chicos: "📍 Peterson Harley + Noche Blues en Hollywood Beach.", logistics: "Miami Beach es ideal para caminar y ver el atardecer juntos." },
+                { id: 11, realDate: "2026-03-27", date: "Vie 27/03", city: "Miami", icon: "🏖️", tags: ["miami", "chicas", "chicos", "all"], priority: "PLAN GRUPAL: 📍 MIAMI BEACH. Ocean Drive y Art Deco.", chicas: "📍 Lincoln Road (Compras).", chicos: "📍 Peterson Harley + Noche Blues en Hollywood Beach.", adrenaline: null, shows: null, logistics: "Miami Beach es ideal para caminar y ver el atardecer juntos." },
+                { id: 12, realDate: "2026-03-28", date: "Sab 28/03", city: "Miami", icon: "🎸", tags: ["miami", "chicas", "chicos", "all"], priority: "Miami: Compras y Relax.", chicas: "📍 Aventura Mall (Opciones 3D en Micro Center).", chicos: "📍 Hard Rock Hotel (Guitarra).", adrenaline: null, shows: null, logistics: "Día libre para dividir el grupo. Aventura Mall está a solo 4km de Sunny Isles." },
                 { id: 13, realDate: "2026-03-29", date: "Dom 29/03", city: "Miami", icon: "🛫", tags: ["miami", "all"], priority: "Playa + Armado de valijas + Aeropuerto.", logistics: "Vuelo 22hs. Salir 4h antes por el tráfico de la I-95." }
             ]
         };
@@ -332,14 +346,43 @@
             const apiKey = localStorage.getItem('gemini_api_key_viaje');
             if (!apiKey) return null;
             
-            // Arreglo definitivo para evitar el error 404: 
-            // Lista de modelos de respaldo. Si uno falla, pasa al siguiente.
-            const models = [
-                'gemini-2.5-flash-preview-09-2025', // Soporte para el entorno del Canvas
-                'gemini-1.5-flash',                 // Soporte estándar público
-                'gemini-1.5-flash-latest',          // Soporte para claves que requieran 'latest'
-                'gemini-pro'                        // Respaldo universal garantizado
-            ];
+            let modelToUse = localStorage.getItem('gemini_working_model');
+            
+            if (!modelToUse) {
+                try {
+                    const listUrl = `https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`;
+                    const listRes = await fetch(listUrl);
+                    if (listRes.ok) {
+                        const data = await listRes.json();
+                        const validModels = data.models.filter(m => 
+                            m.supportedGenerationMethods && 
+                            m.supportedGenerationMethods.includes("generateContent") &&
+                            m.name.includes("gemini")
+                        );
+                        
+                        const prefs = ['gemini-2.5-flash', 'gemini-1.5-flash', 'gemini-pro'];
+                        for (let p of prefs) {
+                            let found = validModels.find(m => m.name.includes(p));
+                            if (found) {
+                                modelToUse = found.name.split('models/')[1];
+                                break;
+                            }
+                        }
+                        if (!modelToUse && validModels.length > 0) {
+                            modelToUse = validModels[0].name.split('models/')[1];
+                        }
+                        
+                        if (modelToUse) {
+                            localStorage.setItem('gemini_working_model', modelToUse);
+                        }
+                    }
+                } catch(e) {
+                    console.error("Error GET:", e);
+                }
+            }
+
+            const fallbackModels = ['gemini-2.5-flash', 'gemini-1.5-flash', 'gemini-1.5-flash-latest', 'gemini-pro'];
+            const models = modelToUse ? [modelToUse, ...fallbackModels.filter(m => m !== modelToUse)] : fallbackModels;
             
             const payload = { contents: [{ parts: [{ text: promptText }] }] };
 
@@ -360,31 +403,31 @@
                         
                         if (response.ok) {
                             const data = await response.json();
+                            localStorage.setItem('gemini_working_model', model);
                             return data?.candidates?.[0]?.content?.parts?.[0]?.text || null;
                         }
                         
-                        // Si el modelo da un error de que no existe (404), saltar al siguiente de la lista
                         if (response.status === 404) {
-                            console.warn(`El modelo ${model} retornó 404. Pasando al siguiente modelo disponible...`);
+                            if (model === localStorage.getItem('gemini_working_model')) {
+                                localStorage.removeItem('gemini_working_model');
+                            }
                             modelFailed = true;
                             break; 
                         }
 
-                        // Si la clave es inválida o no tiene permisos
                         if (response.status === 400 || response.status === 403) {
-                            console.error(`Error ${response.status}: API Key inválida o sin permisos suficientes.`);
-                            return null;
+                            return "Error: Tu API Key es inválida o no tiene permisos.";
                         }
                     } catch (err) {
-                        if (i === retries - 1) console.error("Error de conexión con la IA:", err);
+                        if (i === retries - 1) console.error("Error de conexión IA:", err);
                     }
                     
-                    if (modelFailed) break; // Sale del loop de reintentos y pasa al siguiente modelo
+                    if (modelFailed) break; 
                     await new Promise(res => setTimeout(res, delay));
                     delay *= 2;
                 }
             }
-            return "Hubo un error de conexión con la IA después de varios intentos. Verifica tu API Key.";
+            return "Hubo un error de conexión. No se encontró un modelo compatible habilitado para tu API Key.";
         }
 
         async function getAITips(id) {
@@ -394,11 +437,23 @@
             btn.innerHTML = "<div class='ai-spinner'></div>";
             btn.disabled = true;
             
-            const prompt = `Conserje de Florida. Actividad: ${act.priority} en ${act.city}. Dame 1 restaurante cercano y un tip secreto. 2 frases max. HTML simple.`;
+            // --- INGENIERÍA DE PROMPT MEJORADA PARA EL CONSERJE ---
+            const prompt = `Actúa como un conserje experto local VIP de Florida.
+            Contexto de los viajeros: Familia argentina de vacaciones (edades mezcladas 30 y 60 años).
+            Día de la consulta: ${act.date}. Ciudad: ${act.city}.
+            Actividad principal planificada para hoy: "${act.priority}".
+            Logística actual: "${act.logistics}".
+            
+            Tarea:
+            1. Recomienda 1 lugar muy específico y bien valorado para comer cerca de esta actividad o en la ruta.
+            2. Dame 1 tip "secreto" o consejo logístico de experto para esta zona (ej: dónde estacionar, mejor horario, o algo que los turistas ignoran).
+            
+            Formato: Responde directo. Tono amistoso pero súper conciso (máximo 4 oraciones en total). Usa HTML simple (<b>, <br>) para formatear. No uses markdown (\`\`\`).`;
+
             const result = await fetchGemini(prompt);
             
             if (result && !result.includes("Hubo un error")) {
-                resDiv.innerHTML = `<div class="mt-4 p-4 bg-slate-100 border-l-4 border-blue-500 rounded-r-xl text-sm ai-response">${result.replace(/```html|```/g, '')}</div>`;
+                resDiv.innerHTML = `<div class="mt-4 p-4 bg-slate-100 border-l-4 border-blue-500 rounded-r-xl text-sm ai-response"><p class="font-bold text-blue-900 mb-2">🤖 Conserje IA:</p>${result.replace(/```html|```/g, '')}</div>`;
                 btn.style.display = 'none';
             } else {
                 btn.innerHTML = "⚠️ Reintentar";
@@ -409,11 +464,26 @@
 
         async function getAIShoppingPhrases(person) {
             const resDiv = document.getElementById('ai-shopping-result');
-            resDiv.innerHTML = "<div class='ai-spinner'></div> Generando frases...";
+            resDiv.innerHTML = "<div class='ai-spinner'></div> Analizando contexto para generar frases exactas...";
             resDiv.classList.remove('hidden');
-            const ctx = person === 'juan' ? "Hombre comprando pedales de guitarra y equipo de moto." : "Mujer comprando Stanley y ropa de lujo.";
-            const res = await fetchGemini(`3 frases en inglés para pedir ayuda sobre ${ctx}. Incluye traducción. HTML lista.`);
-            if (res) resDiv.innerHTML = res.replace(/```html|```/g, '');
+            
+            // --- INGENIERÍA DE PROMPT MEJORADA PARA COMPRAS ---
+            const ctx = person === 'juan' 
+                ? "Soy un hombre argentino en USA buscando comprar pedales de guitarra boutique (ej. Strymon, Boss), accesorios de música y equipamiento específico de motocicletas (herramientas en Harbor Freight, visores)." 
+                : "Soy una mujer argentina en USA buscando componentes y repuestos para impresoras 3D (filamentos, marca Creality/Bambu), termos/vasos Stanley específicos en Dick's, y ropa/maquillaje en Aventura Mall.";
+                
+            const prompt = `Actúa como un asistente de compras bilingüe (Personal Shopper).
+            Contexto del usuario: ${ctx}
+            
+            Tarea:
+            1. Genera 3 frases en inglés (naturales, educadas y nativas) que el usuario pueda mostrar o leer a un empleado de la tienda para preguntar específicamente por sus artículos y pedir ayuda con el stock.
+            2. Incluye la traducción exacta al español al lado o debajo de cada una.
+            3. Añade 1 consejo súper breve de "cultura de compras" en USA relacionado a esto (ej: cómo preguntar por stock oculto en depósito, temas de impuestos (tax), o cómo buscar clearance/descuentos).
+            
+            Formato: Usa listas en HTML simple (<ul>, <li>, <b>). Respuesta al grano. No uses bloques de código markdown (\`\`\`).`;
+
+            const res = await fetchGemini(prompt);
+            if (res) resDiv.innerHTML = `<p class="font-bold text-purple-900 mb-3 flex items-center gap-2"><span>🛍️</span> Asistente de Compras Inteligente:</p>` + res.replace(/```html|```/g, '');
         }
 
         function switchTab(id) {
@@ -475,7 +545,7 @@
                 options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, scales: commonScales, plugins: { legend: { display: false } } }
             });
             new Chart(document.getElementById('miamiDistancesChart'), {
-                type: 'bar', data: { labels: ['Aventura Mall','Gulfstream','Hollywood Broadwalk','Peterson Harley','Hard Rock','MIA Airport','Sawgrass Mills'], datasets: [{ data: [4, 5.5, 8.5, 12, 20, 31, 35], backgroundColor: '#0ea5e9', borderRadius: 4 }] },
+                type: 'bar', data: { labels: ['Aventura Mall','Gulfstream','Hollywood Broadwalk','Peterson Harley','Hard Rock','MIA Airport','Sawgrass Mills', 'Micro Center (3D)'], datasets: [{ data: [4, 5.5, 8.5, 12, 20, 31, 35, 35], backgroundColor: '#0ea5e9', borderRadius: 4 }] },
                 options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, scales: commonScales, plugins: { legend: { display: false } } }
             });
         }
@@ -533,110 +603,6 @@
                 else localStorage.setItem('gemini_api_key_viaje', k.trim());
                 location.reload();
             }
-        }
-
-        async function fetchGemini(promptText) {
-            const apiKey = localStorage.getItem('gemini_api_key_viaje');
-            if (!apiKey) return null;
-            
-            let modelToUse = localStorage.getItem('gemini_working_model');
-            
-            // 1. AUTO-DESCUBRIMIENTO (GET): Buscar modelos disponibles para esta API Key
-            if (!modelToUse) {
-                try {
-                    const listUrl = `https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`;
-                    const listRes = await fetch(listUrl);
-                    if (listRes.ok) {
-                        const data = await listRes.json();
-                        // Filtrar modelos que soporten generación de texto
-                        const validModels = data.models.filter(m => 
-                            m.supportedGenerationMethods && 
-                            m.supportedGenerationMethods.includes("generateContent") &&
-                            m.name.includes("gemini")
-                        );
-                        
-                        // Prioridades de modelos a elegir
-                        const prefs = ['gemini-2.5-flash', 'gemini-1.5-flash', 'gemini-pro'];
-                        for (let p of prefs) {
-                            let found = validModels.find(m => m.name.includes(p));
-                            if (found) {
-                                modelToUse = found.name.split('models/')[1];
-                                break;
-                            }
-                        }
-                        // Si no encuentra los preferidos, usa el primero disponible que sirva
-                        if (!modelToUse && validModels.length > 0) {
-                            modelToUse = validModels[0].name.split('models/')[1];
-                        }
-                        
-                        if (modelToUse) {
-                            localStorage.setItem('gemini_working_model', modelToUse);
-                            console.log("Modelo descubierto por API (GET):", modelToUse);
-                        }
-                    }
-                } catch(e) {
-                    console.error("Error en auto-descubrimiento GET:", e);
-                }
-            }
-
-            // 2. FALLBACKS DE SEGURIDAD (Si el GET falla o el modelo guardado da error)
-            const fallbackModels = [
-                'gemini-2.5-flash',
-                'gemini-1.5-flash',
-                'gemini-1.5-flash-latest',
-                'gemini-pro'
-            ];
-            
-            // Insertar el modelo dinámico al principio de la fila si existe
-            const models = modelToUse ? [modelToUse, ...fallbackModels.filter(m => m !== modelToUse)] : fallbackModels;
-            
-            const payload = { contents: [{ parts: [{ text: promptText }] }] };
-
-            for (let model of models) {
-                const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
-                
-                let retries = 3;
-                let delay = 1000;
-                let modelFailed = false;
-
-                for (let i = 0; i < retries; i++) {
-                    try {
-                        const response = await fetch(url, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(payload)
-                        });
-                        
-                        if (response.ok) {
-                            const data = await response.json();
-                            // Guardar este modelo como el "ganador" para futuras llamadas y no volver a iterar
-                            localStorage.setItem('gemini_working_model', model);
-                            return data?.candidates?.[0]?.content?.parts?.[0]?.text || null;
-                        }
-                        
-                        if (response.status === 404) {
-                            console.warn(`El modelo ${model} retornó 404. Saltando al siguiente de la lista de respaldo...`);
-                            if (model === localStorage.getItem('gemini_working_model')) {
-                                localStorage.removeItem('gemini_working_model');
-                            }
-                            modelFailed = true;
-                            break; 
-                        }
-
-                        if (response.status === 400 || response.status === 403) {
-                            console.error(`Error ${response.status}: API Key inválida o sin permisos.`);
-                            return "Error: Tu API Key es inválida o no tiene permisos.";
-                        }
-                    } catch (err) {
-                        if (i === retries - 1) console.error("Error de conexión IA:", err);
-                    }
-                    
-                    if (modelFailed) break; // Sale del loop de reintentos de ESTE modelo y prueba el siguiente
-                    await new Promise(res => setTimeout(res, delay));
-                    delay *= 2;
-                }
-            }
-            return "Hubo un error de conexión. No se encontró un modelo compatible habilitado para tu API Key.";
         }
 
         window.onload = () => {
