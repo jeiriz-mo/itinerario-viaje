@@ -15,7 +15,7 @@
         <header class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
             <div>
                 <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Objetivo 20K <i class="fa-solid fa-plane-departure text-blue-500 ml-2"></i></h1>
-                <p class="text-slate-500">Control mensual proporcional</p>
+                <p class="text-slate-500">Control mensual proporcional (24 Meses)</p>
             </div>
             <div class="bg-white px-6 py-3 rounded-2xl shadow-sm border border-slate-200 flex items-center gap-3">
                 <i class="fa-solid fa-money-bill-trend-up text-green-500 text-xl"></i>
@@ -82,16 +82,16 @@
                 </div>
                 <div class="md:col-span-2">
                     <button type="submit" id="btn-submit" class="w-full bg-slate-900 text-white font-bold py-4 rounded-xl hover:bg-slate-800 transition shadow-lg shadow-slate-900/20 flex justify-center items-center gap-2">
-                        <span>Sumar Aporte al Planilla</span>
+                        <span>Sumar Aporte a la Planilla</span>
                         <i class="fa-solid fa-plus"></i>
                     </button>
-                    <p class="text-center text-xs text-slate-400 mt-3">Los aportes hechos en el mismo mes se suman automáticamente en el historial.</p>
+                    <p class="text-center text-xs text-slate-400 mt-3">Los aportes hechos en el mismo mes se agrupan automáticamente en el historial.</p>
                 </div>
             </form>
         </div>
 
         <div class="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-slate-200">
-            <h2 class="text-xl font-bold mb-6 text-slate-800 border-b pb-4">Historial de Aportes (Agrupado por Mes)</h2>
+            <h2 class="text-xl font-bold mb-6 text-slate-800 border-b pb-4">Historial de Aportes (Agrupado)</h2>
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse min-w-[600px]">
                     <thead>
@@ -117,7 +117,7 @@
     <script>
         // --- CONFIGURACIÓN ---
         // ¡REEMPLAZAR ESTA URL POR LA DE TU GOOGLE APPS SCRIPT!
-        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbylckZNYNC0pzOXz8x1eKMrntAM74NQkogqr__bT7LE8TboLtLad8uMuncnRb_u6uYl/exec'; 
+        const WEB_APP_URL = 'TU_URL_DE_APPS_SCRIPT_AQUI'; 
         const BASE_VOS = 647.25;
         const BASE_NOVIA = 186.08;
         const META_TOTAL = 20000;
@@ -161,30 +161,25 @@
                     mesesCalendarioTranscurridos = (fechaActual.getFullYear() - fechaPrimerAporte.getFullYear()) * 12 
                                                  + fechaActual.getMonth() - fechaPrimerAporte.getMonth() + 1;
 
-                    // 2. Agrupar todas las filas (aportes) por "Mes y Año"
+                    // 2. Agrupar filas por Mes
                     data.forEach(fila => {
                         const date = new Date(fila[0]);
-                        // Clave para agrupar (ej: "2026-04")
                         const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`; 
-                        // Nombre lindo para mostrar (ej: "Abril 2026")
                         const nombreMes = date.toLocaleDateString('es-AR', { month: 'long', year: 'numeric' });
 
                         const ahorroVos = parseFloat(fila[3]) || 0;
                         const ahorroNovia = parseFloat(fila[5]) || 0;
                         const coti = parseFloat(fila[1]) || 0;
 
-                        // Si el mes no existe en nuestra lista agrupada, lo creamos
                         if (!agrupadoporMes[key]) {
                             agrupadoporMes[key] = { nombre: nombreMes, vos: 0, novia: 0, cotiSum: 0, cantidadAportes: 0 };
                         }
 
-                        // Sumamos los valores al mes correspondiente
                         agrupadoporMes[key].vos += ahorroVos;
                         agrupadoporMes[key].novia += ahorroNovia;
                         agrupadoporMes[key].cotiSum += coti;
                         agrupadoporMes[key].cantidadAportes += 1;
 
-                        // Sumamos al total histórico general
                         totalAhorradoVos += ahorroVos;
                         totalAhorradoNovia += ahorroNovia;
                     });
@@ -198,7 +193,6 @@
                 if (mesesKeys.length === 0) {
                     historialBody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-400 text-sm italic">Aún no hay registros. ¡Cargá el primer aporte!</td></tr>`;
                 } else {
-                    // Ordenamos de más nuevo a más viejo
                     mesesKeys.sort().reverse().forEach(key => {
                         const mesData = agrupadoporMes[key];
                         const totalMes = mesData.vos + mesData.novia;
@@ -219,24 +213,28 @@
                     });
                 }
 
-                // 4. Lógica de Deuda / Superávit (Basado en meses calendario reales)
-                let deudaVos = (mesesCalendarioTranscurridos * BASE_VOS) - totalAhorradoVos;
-                let deudaNovia = (mesesCalendarioTranscurridos * BASE_NOVIA) - totalAhorradoNovia;
+                // 4. Lógica MATEMÁTICA CORREGIDA
+                // La meta acumulada a la fecha es los meses que pasaron por la cuota base.
+                let metaAcumuladaVos = mesesCalendarioTranscurridos * BASE_VOS;
+                let metaAcumuladaNovia = mesesCalendarioTranscurridos * BASE_NOVIA;
 
-                let metaEsteMesVos = BASE_VOS + deudaVos;
-                let metaEsteMesNovia = BASE_NOVIA + deudaNovia;
+                // El faltante es simplemente lo que debían acumular menos lo que realmente pusieron.
+                let faltanteVos = metaAcumuladaVos - totalAhorradoVos;
+                let faltanteNovia = metaAcumuladaNovia - totalAhorradoNovia;
 
-                // Actualizar UI - Vos
-                document.getElementById('meta-vos').innerText = `${metaEsteMesVos.toFixed(2)} USD`;
-                document.getElementById('ars-vos').innerText = `Equivale a ~$${(metaEsteMesVos * bluePrice).toLocaleString('es-AR', {maximumFractionDigits: 0})} ARS`;
-                updateEstado('estado-vos', deudaVos, 'bg-red-100 text-red-700', 'bg-emerald-100 text-emerald-700');
+                // Actualizar UI - Vos (Si el faltante es negativo, significa que tienen plata a favor, la meta es 0)
+                let mostrarMetaVos = faltanteVos > 0 ? faltanteVos : 0;
+                document.getElementById('meta-vos').innerText = `${mostrarMetaVos.toFixed(2)} USD`;
+                document.getElementById('ars-vos').innerText = `Equivale a ~$${(mostrarMetaVos * bluePrice).toLocaleString('es-AR', {maximumFractionDigits: 0})} ARS`;
+                updateEstado('estado-vos', faltanteVos);
 
                 // Actualizar UI - Novia
-                document.getElementById('meta-novia').innerText = `${metaEsteMesNovia.toFixed(2)} USD`;
-                document.getElementById('ars-novia').innerText = `Equivale a ~$${(metaEsteMesNovia * bluePrice).toLocaleString('es-AR', {maximumFractionDigits: 0})} ARS`;
-                updateEstado('estado-novia', deudaNovia, 'bg-red-100 text-red-700', 'bg-emerald-100 text-emerald-700');
+                let mostrarMetaNovia = faltanteNovia > 0 ? faltanteNovia : 0;
+                document.getElementById('meta-novia').innerText = `${mostrarMetaNovia.toFixed(2)} USD`;
+                document.getElementById('ars-novia').innerText = `Equivale a ~$${(mostrarMetaNovia * bluePrice).toLocaleString('es-AR', {maximumFractionDigits: 0})} ARS`;
+                updateEstado('estado-novia', faltanteNovia);
 
-                // Actualizar Gráfico
+                // Actualizar Gráfico General
                 let totalAcumulado = totalAhorradoVos + totalAhorradoNovia;
                 document.getElementById('progreso-texto').innerText = `${totalAcumulado.toFixed(0)} / 20.000`;
                 renderChart(totalAhorradoVos, totalAhorradoNovia, META_TOTAL - totalAcumulado);
@@ -247,21 +245,24 @@
             }
         }
 
-        function updateEstado(elementId, deuda, classDeuda, classSuperavit) {
+        // 5. Etiquetas de estado corregidas
+        function updateEstado(elementId, faltante) {
             const el = document.getElementById(elementId);
             el.className = "text-xs font-semibold px-3 py-1 rounded-full inline-block mt-2 ";
-            if (deuda > 1) {
-                el.innerText = `Falta para estar al día: -$${deuda.toFixed(2)} USD`;
-                el.className += classDeuda;
-            } else if (deuda < -1) {
-                el.innerText = `Adelanto a favor: +$${Math.abs(deuda).toFixed(2)} USD`;
-                el.className += classSuperavit;
+            
+            if (faltante > 0.1) {
+                el.innerText = `Falta para cubrir la meta de hoy: $${faltante.toFixed(2)} USD`;
+                el.className += "bg-red-100 text-red-700";
+            } else if (faltante < -0.1) {
+                el.innerText = `Adelanto a favor: $${Math.abs(faltante).toFixed(2)} USD`;
+                el.className += "bg-emerald-100 text-emerald-700";
             } else {
-                el.innerText = "Al día con las metas 🎯";
+                el.innerText = "Exactamente al día 🎯";
                 el.className += "bg-blue-100 text-blue-700";
             }
         }
 
+        // 6. Gráfico (Chart.js)
         function renderChart(vos, novia, faltante) {
             const ctx = document.getElementById('progressChart').getContext('2d');
             if (chartInstance) chartInstance.destroy();
@@ -285,6 +286,7 @@
             });
         }
 
+        // 7. Guardar Datos
         document.getElementById('ahorro-form').onsubmit = async (e) => {
             e.preventDefault();
             const btn = document.getElementById('btn-submit');
@@ -305,13 +307,12 @@
                 body: JSON.stringify(payload)
             });
             
-            // Si el guardado fue exitoso:
             document.getElementById('ahorroVos').value = 0;
             document.getElementById('ahorroNovia').value = 0;
-            btn.innerHTML = '<span>Sumar Aporte al Planilla</span><i class="fa-solid fa-plus"></i>';
+            btn.innerHTML = '<span>Sumar Aporte a la Planilla</span><i class="fa-solid fa-plus"></i>';
             btn.disabled = false;
             
-            init(); // Recargar datos sin refrescar la página
+            init(); 
         };
 
         init();
