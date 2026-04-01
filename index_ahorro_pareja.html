@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plan de Ahorro 20k USD</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 p-4 md:p-10">
+    <div class="max-w-2xl mx-auto bg-white p-6 rounded-2xl shadow-xl">
+        <h1 class="text-2xl font-bold text-center text-slate-800 mb-6">Control de Ahorro Conjunto</h1>
+        
+        <div id="dolar-info" class="bg-blue-100 p-4 rounded-lg mb-6 text-center text-blue-800 font-semibold">
+            Cargando cotización del Dólar Blue...
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 mb-8">
+            <div class="p-4 bg-green-50 rounded-xl border border-green-200">
+                <p class="text-sm text-green-700">Meta Mensual Vos</p>
+                <p class="text-2xl font-bold text-green-900">647,25 USD</p>
+                <p id="ars-vos" class="text-xs text-green-600 mt-1 italic"></p>
+            </div>
+            <div class="p-4 bg-purple-50 rounded-xl border border-purple-200">
+                <p class="text-sm text-purple-700">Meta Mensual Novia</p>
+                <p class="text-2xl font-bold text-purple-900">186,08 USD</p>
+                <p id="ars-novia" class="text-xs text-purple-600 mt-1 italic"></p>
+            </div>
+        </div>
+
+        <form id="ahorro-form" class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-slate-700">Ahorro Real Vos (USD)</label>
+                <input type="number" id="ahorroVos" step="0.01" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" required>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700">Ahorro Real Novia (USD)</label>
+                <input type="number" id="ahorroNovia" step="0.01" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" required>
+            </div>
+            <button type="submit" class="w-full bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition">Registrar Mes</button>
+        </form>
+
+        <div class="mt-10">
+            <div class="flex justify-between text-sm mb-2">
+                <span class="font-medium text-slate-600">Progreso Total</span>
+                <span id="progreso-texto" class="font-bold text-blue-600">Calculando...</span>
+            </div>
+            <div class="w-full bg-slate-200 rounded-full h-4">
+                <div id="progreso-barra" class="bg-blue-500 h-4 rounded-full transition-all duration-1000" style="width: 0%"></div>
+            </div>
+            <p class="text-center text-xs text-slate-400 mt-2 italic text-pretty">Meta: 20.000 USD en 24 meses</p>
+        </div>
+    </div>
+
+    <script>
+        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbylckZNYNC0pzOXz8x1eKMrntAM74NQkogqr__bT7LE8TboLtLad8uMuncnRb_u6uYl/exec';
+        let bluePrice = 0;
+
+        // 1. Obtener Dólar Blue
+        async function fetchDolar() {
+            try {
+                const res = await fetch('https://dolarapi.com/v1/dolares/blue');
+                const data = await res.json();
+                bluePrice = data.venta;
+                document.getElementById('dolar-info').innerText = `Dólar Blue Hoy: $${bluePrice}`;
+                document.getElementById('ars-vos').innerText = `Equivale a ~$${(647.25 * bluePrice).toLocaleString()} ARS`;
+                document.getElementById('ars-novia').innerText = `Equivale a ~$${(186.08 * bluePrice).toLocaleString()} ARS`;
+            } catch (e) {
+                document.getElementById('dolar-info').innerText = "Error al cargar dólar. Usar $1.400 ref.";
+                bluePrice = 1400;
+            }
+        }
+
+        // 2. Obtener progreso desde el Sheet
+        async function fetchProgreso() {
+            const res = await fetch(WEB_APP_URL);
+            const data = await res.json();
+            let totalAhorrado = 0;
+            data.forEach(fila => {
+                totalAhorrado += (parseFloat(fila[3]) || 0) + (parseFloat(fila[5]) || 0);
+            });
+            
+            const porcentaje = (totalAhorrado / 20000) * 100;
+            document.getElementById('progreso-texto').innerText = `${totalAhorrado.toLocaleString()} / 20.000 USD`;
+            document.getElementById('progreso-barra').style.width = `${porcentaje}%`;
+        }
+
+        // 3. Enviar datos al Sheet
+        document.getElementById('ahorro-form').onsubmit = async (e) => {
+            e.preventDefault();
+            const payload = {
+                cotizacion: bluePrice,
+                metaVos: 647.25,
+                ahorroVos: document.getElementById('ahorroVos').value,
+                metaNovia: 186.08,
+                ahorroNovia: document.getElementById('ahorroNovia').value,
+                comentarios: ""
+            };
+
+            await fetch(WEB_APP_URL, {
+                method: 'POST',
+                body: JSON.stringify(payload)
+            });
+            alert("¡Ahorro registrado!");
+            location.reload();
+        };
+
+        fetchDolar();
+        fetchProgreso();
+    </script>
+</body>
+</html>
