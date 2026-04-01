@@ -1,674 +1,320 @@
 <!DOCTYPE html>
-<html lang="es" class="scroll-smooth">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Florida Roadtrip 2026</title>
-    
-    <!-- La configuración de Tailwind debe SIEMPRE ir antes de la importación del script del CDN -->
-    <script>
-        tailwind = {
-            config: {
-                theme: {
-                    extend: {
-                        fontFamily: { sans: ['Inter', 'sans-serif'] },
-                        colors: { brand: { 50: '#eff6ff', 100: '#dbeafe', 500: '#3b82f6', 600: '#2563eb', 900: '#1e3a8a' } }
-                    }
-                }
-            }
-        }
-    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ahorro Pareja | 20k USD</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    
-    <style>
-        body {
-            background-color: #f4f7f9;
-            background-image: radial-gradient(circle at top right, #e0e7ff 0%, transparent 20%), radial-gradient(circle at bottom left, #ffedd5 0%, transparent 20%);
-            background-attachment: fixed;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
-        
-        /* Ocultar barra de scroll webkit pero permitir scroll */
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-
-        .chart-container { position: relative; width: 100%; max-width: 500px; margin: 0 auto; height: 300px; }
-        .distance-chart-container { position: relative; width: 100%; height: 350px; }
-        @media (min-width: 768px) { .chart-container { height: 350px; } .distance-chart-container { height: 400px; } }
-        
-        /* Spinner Moderno */
-        .ai-spinner {
-            border: 2px solid rgba(59, 130, 246, 0.2);
-            border-left-color: #3b82f6;
-            border-radius: 50%;
-            width: 18px;
-            height: 18px;
-            animation: spin 0.8s linear infinite;
-            display: inline-block;
-            vertical-align: middle;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        /* Animaciones UI */
-        .fade-in { animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        /* Tabs Logic */
-        .tab-content { display: none; opacity: 0; transition: opacity 0.3s ease; }
-        .tab-content.active { display: flex; opacity: 1; flex-direction: column; }
-
-        /* Checklist Moderno */
-        .check-row { transition: all 0.2s ease; }
-        .check-row:hover { background-color: #f8fafc; transform: translateX(4px); }
-        input[type="checkbox"]:checked + span { text-decoration: line-through; color: #94a3b8; }
-        input[type="checkbox"] { width: 1.1rem; height: 1.1rem; border-radius: 4px; cursor: pointer; transition: all 0.2s; }
-        
-        /* Timeline */
-        .timeline-line { position: absolute; left: 24px; top: 24px; bottom: 0; width: 2px; background: #e2e8f0; z-index: 0; }
-        .timeline-node { position: absolute; left: 16px; top: 24px; width: 18px; height: 18px; border-radius: 50%; background: #fff; border: 4px solid #3b82f6; z-index: 10; box-shadow: 0 0 0 4px #f8fafc; }
-    </style>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
-<body class="min-h-screen flex flex-col text-slate-800">
+<body class="bg-slate-100 min-h-screen font-sans text-slate-800 pb-12">
 
-    <!-- Header Glassmorphism -->
-    <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200/80 shadow-sm transition-all">
-        <div class="max-w-6xl mx-auto px-4 py-3 md:py-4 flex flex-col md:flex-row justify-between items-center gap-3">
-            <div class="text-center md:text-left">
-                <h1 class="text-xl md:text-2xl font-extrabold tracking-tight text-slate-900 drop-shadow-sm">🌴 Florida Roadtrip '26</h1>
-                <p class="text-slate-500 text-xs md:text-sm font-medium mt-0.5">Orlando & Miami • 17 al 29 de Marzo</p>
-            </div>
-            <div class="flex gap-2 flex-wrap justify-center">
-                <span class="bg-blue-100 text-blue-800 border border-blue-200 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider shadow-sm">👨‍👩‍👦 Grupo</span>
-                <span class="bg-pink-100 text-pink-800 border border-pink-200 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider shadow-sm">💄 Chicas</span>
-                <span class="bg-orange-100 text-orange-800 border border-orange-200 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider shadow-sm">🎸 Chicos</span>
-            </div>
-        </div>
+    <div class="max-w-4xl mx-auto p-4 md:p-8">
         
-        <div id="dynamic-time-banner" class="bg-gradient-to-r from-brand-600 to-blue-500 text-white text-center text-xs font-semibold py-1.5 px-4 shadow-inner hidden">
-            <!-- Cargando Banner Tiempo... -->
-        </div>
+        <header class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+            <div>
+                <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Objetivo 20K <i class="fa-solid fa-plane-departure text-blue-500 ml-2"></i></h1>
+                <p class="text-slate-500">Control mensual proporcional</p>
+            </div>
+            <div class="bg-white px-6 py-3 rounded-2xl shadow-sm border border-slate-200 flex items-center gap-3">
+                <i class="fa-solid fa-money-bill-trend-up text-green-500 text-xl"></i>
+                <div>
+                    <p class="text-xs text-slate-400 font-semibold uppercase">Dólar Blue Venta</p>
+                    <p id="dolar-valor" class="text-xl font-bold text-slate-800">Cargando...</p>
+                </div>
+            </div>
+        </header>
 
-        <!-- Navegación de Pestañas (Pills) -->
-        <div class="max-w-6xl mx-auto px-4 py-2">
-            <nav class="flex space-x-2 overflow-x-auto pb-1" aria-label="Tabs" id="nav-tabs">
-                <button onclick="switchTab('todo')" id="btn-tab-todo" class="tab-btn bg-slate-800 text-white shadow-md rounded-full px-5 py-2.5 text-sm font-semibold transition-all flex items-center gap-2 whitespace-nowrap active:scale-95">
-                    <span>🌟</span> Todo
-                </button>
-                <button onclick="switchTab('itinerario')" id="btn-tab-itinerario" class="tab-btn bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 hover:text-slate-900 rounded-full px-5 py-2.5 text-sm font-medium transition-all flex items-center gap-2 whitespace-nowrap active:scale-95">
-                    <span>📅</span> Itinerario
-                </button>
-                <button onclick="switchTab('equipaje')" id="btn-tab-equipaje" class="tab-btn bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 hover:text-slate-900 rounded-full px-5 py-2.5 text-sm font-medium transition-all flex items-center gap-2 whitespace-nowrap active:scale-95">
-                    <span>🧳</span> Equipaje
-                </button>
-                <button onclick="switchTab('compras')" id="btn-tab-compras" class="tab-btn bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 hover:text-slate-900 rounded-full px-5 py-2.5 text-sm font-medium transition-all flex items-center gap-2 whitespace-nowrap active:scale-95">
-                    <span>🛒</span> Compras & Bares
-                </button>
-            </nav>
-        </div>
-    </header>
-
-    <main class="flex-grow max-w-6xl mx-auto px-4 py-8 w-full">
-
-        <!-- ================= PESTAÑA ITINERARIO ================= -->
-        <div id="tab-itinerario" class="tab-content active gap-8 fade-in">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             
-            <!-- Dashboard Logístico -->
-            <section class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 md:p-8">
-                <h2 class="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2"><span>📊</span> Dashboard Logístico</h2>
-                
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-                    <div class="flex flex-col gap-4">
-                        <div class="bg-slate-50 p-5 rounded-2xl border border-slate-100 hover:shadow-md transition-shadow">
-                            <h3 class="font-bold text-sm text-slate-900 flex items-center gap-2">🏰 Alojamiento Orlando</h3>
-                            <p class="text-sm text-slate-600 mt-2"><strong>Worldquest Resort</strong><br><span class="text-xs text-slate-400">📍 8774 Worldquest Blvd</span></p>
-                        </div>
-                        <div class="bg-slate-50 p-5 rounded-2xl border border-slate-100 hover:shadow-md transition-shadow">
-                            <h3 class="font-bold text-sm text-slate-900 flex items-center gap-2">🏖️ Alojamiento Miami</h3>
-                            <p class="text-sm text-slate-600 mt-2"><strong>Sunny Isles Beach</strong><br><span class="text-xs text-slate-400">📍 17555 Atlantic Blvd</span></p>
-                        </div>
-                        <div class="bg-slate-50 p-5 rounded-2xl border border-slate-100 hover:shadow-md transition-shadow">
-                            <h3 class="font-bold text-sm text-slate-900 flex items-center gap-2">🚆 Movilidad Principal</h3>
-                            <p class="text-sm text-slate-600 mt-2">Tren <strong>Brightline</strong> (Traslado 26/03) y flota de <strong>Uber/Lyft</strong> local.</p>
-                        </div>
-                    </div>
-
-                    <div class="lg:col-span-2 bg-slate-50 p-6 rounded-2xl border border-slate-100 flex flex-col justify-center items-center">
-                        <h3 class="font-bold text-sm text-slate-800 mb-4">Distribución del Viaje</h3>
-                        <div class="chart-container"><canvas id="activityChart"></canvas></div>
-                    </div>
+            <div class="bg-white rounded-3xl p-6 shadow-xl shadow-blue-900/5 border border-slate-100 relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-24 h-24 bg-blue-50 rounded-bl-full -z-10"></div>
+                <h2 class="text-lg font-bold mb-4 text-slate-700">Tu Aporte</h2>
+                <div class="mb-4">
+                    <p class="text-sm text-slate-500 mb-1">Objetivo de este mes</p>
+                    <p id="meta-vos" class="text-3xl font-black text-blue-600">...</p>
+                    <p id="ars-vos" class="text-sm font-medium text-slate-400 mt-1">...</p>
                 </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8 pt-8 border-t border-slate-100">
-                    <div>
-                        <h3 class="font-bold text-brand-600 text-center text-sm mb-1">📍 Distancias en Orlando</h3>
-                        <p class="text-[10px] text-slate-400 text-center mb-4 uppercase tracking-wider">Desde Worldquest Resort (KM)</p>
-                        <div class="distance-chart-container"><canvas id="orlandoDistancesChart"></canvas></div>
-                    </div>
-                    <div>
-                        <h3 class="font-bold text-teal-600 text-center text-sm mb-1">📍 Distancias en Miami</h3>
-                        <p class="text-[10px] text-slate-400 text-center mb-4 uppercase tracking-wider">Desde Sunny Isles (KM)</p>
-                        <div class="distance-chart-container"><canvas id="miamiDistancesChart"></canvas></div>
-                    </div>
+                <div id="estado-vos" class="text-xs font-semibold px-3 py-1 rounded-full inline-block bg-slate-100 text-slate-600">
+                    Calculando historial...
                 </div>
-            </section>
+            </div>
 
-            <!-- Línea de Tiempo del Itinerario -->
-            <section class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 md:p-8">
-                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-                    <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2"><span>🗺️</span> Ruta Diaria</h2>
-                    
-                    <!-- Filtros Modernos -->
-                    <div class="flex bg-slate-100 p-1 rounded-full overflow-x-auto max-w-full" id="filter-container">
-                        <button data-filter="all" class="filter-btn bg-white shadow-sm text-slate-800 px-4 py-1.5 rounded-full text-xs font-bold transition-all">Ver Todo</button>
-                        <button data-filter="chicas" class="filter-btn text-slate-500 hover:text-slate-800 px-4 py-1.5 rounded-full text-xs font-medium transition-all">💄 Chicas</button>
-                        <button data-filter="chicos" class="filter-btn text-slate-500 hover:text-slate-800 px-4 py-1.5 rounded-full text-xs font-medium transition-all">🎸 Chicos</button>
-                    </div>
+            <div class="bg-white rounded-3xl p-6 shadow-xl shadow-purple-900/5 border border-slate-100 relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-24 h-24 bg-purple-50 rounded-bl-full -z-10"></div>
+                <h2 class="text-lg font-bold mb-4 text-slate-700">Aporte Novia</h2>
+                <div class="mb-4">
+                    <p class="text-sm text-slate-500 mb-1">Objetivo de este mes</p>
+                    <p id="meta-novia" class="text-3xl font-black text-purple-600">...</p>
+                    <p id="ars-novia" class="text-sm font-medium text-slate-400 mt-1">...</p>
                 </div>
+                <div id="estado-novia" class="text-xs font-semibold px-3 py-1 rounded-full inline-block bg-slate-100 text-slate-600">
+                    Calculando historial...
+                </div>
+            </div>
 
-                <!-- Estructura Timeline -->
-                <div class="relative py-4" id="itinerary-timeline-container">
-                    <div class="timeline-line hidden sm:block"></div>
-                    <div id="itinerary-list" class="flex flex-col gap-6"></div>
+            <div class="bg-slate-900 rounded-3xl p-6 shadow-xl shadow-slate-900/20 text-white flex flex-col justify-center items-center">
+                <h2 class="text-sm font-medium text-slate-400 mb-2">Progreso Total</h2>
+                <p id="progreso-texto" class="text-3xl font-black mb-4">0 / 20.000</p>
+                <div class="w-full h-32 relative">
+                    <canvas id="progressChart"></canvas>
                 </div>
-            </section>
+            </div>
         </div>
 
-        <!-- ================= PESTAÑA EQUIPAJE ================= -->
-        <div id="tab-equipaje" class="tab-content gap-6 fade-in">
-            <section class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 md:p-8 overflow-hidden relative">
-                <div class="absolute top-0 right-0 w-32 h-32 bg-slate-50 rounded-full -mr-16 -mt-16 z-0"></div>
-                <h2 class="text-2xl font-extrabold text-slate-800 mb-6 relative z-10 flex items-center gap-2">🧳 Estrategia de Equipaje</h2>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10">
-                    <div class="bg-gradient-to-b from-orange-50 to-white border border-orange-100 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow">
-                        <h3 class="text-lg font-bold text-orange-900 mb-5 flex items-center gap-2 border-b border-orange-200/50 pb-3">
-                            <span class="bg-orange-100 p-2 rounded-lg text-xl shadow-sm">🎸</span> Hombres
-                        </h3>
-                        <ul class="text-sm text-slate-700 space-y-4 font-medium">
-                            <li class="flex items-start gap-3"><span class="text-green-500 text-lg">✓</span> <span>3 remeras cómodas (comprar el resto allá).</span></li>
-                            <li class="flex items-start gap-3"><span class="text-green-500 text-lg">✓</span> <span>1 Jean puesto + 1 Bermuda en valija.</span></li>
-                            <li class="flex items-start gap-3"><span class="text-green-500 text-lg">✓</span> <span>Powerbank OBLIGATORIO (10.000mAh min).</span></li>
-                            <li class="flex items-start gap-3 bg-red-50 p-3 rounded-xl border border-red-100"><span class="text-red-500 text-lg">⚠</span> <span class="text-red-900">NO llevar cascos ni herramientas desde casa. Comprar todo en USA.</span></li>
-                        </ul>
-                    </div>
-                    
-                    <div class="bg-gradient-to-b from-pink-50 to-white border border-pink-100 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow">
-                        <h3 class="text-lg font-bold text-pink-900 mb-5 flex items-center gap-2 border-b border-pink-200/50 pb-3">
-                            <span class="bg-pink-100 p-2 rounded-lg text-xl shadow-sm">💄</span> Mujeres
-                        </h3>
-                        <ul class="text-sm text-slate-700 space-y-4 font-medium">
-                            <li class="flex items-start gap-3"><span class="text-green-500 text-lg">✓</span> <span>Ropa liviana para los primeros 4 días.</span></li>
-                            <li class="flex items-start gap-3"><span class="text-green-500 text-lg">✓</span> <span>1 abrigo liviano para la noche/aire acondicionado.</span></li>
-                            <li class="flex items-start gap-3"><span class="text-green-500 text-lg">✓</span> <span>Zapatillas (cómodas para parque) + sandalias.</span></li>
-                            <li class="flex items-start gap-3 bg-red-50 p-3 rounded-xl border border-red-100"><span class="text-red-500 text-lg">⚠</span> <span class="text-red-900">Dejar EXTREMO espacio vacío en la valija para ropa, Stanley y maquillaje.</span></li>
-                        </ul>
+        <div class="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-slate-200 mb-8">
+            <h2 class="text-xl font-bold mb-6 text-slate-800 border-b pb-4">Registrar Aporte (Suma al mes actual)</h2>
+            <form id="ahorro-form" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-semibold text-slate-600 mb-2">¿Cuánto pudiste ahorrar VOS hoy? (USD)</label>
+                    <div class="relative">
+                        <span class="absolute left-4 top-3 text-slate-400">$</span>
+                        <input type="number" id="ahorroVos" step="0.01" value="0" class="w-full pl-8 p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition" required>
                     </div>
                 </div>
-            </section>
-        </div>
-
-        <!-- ================= PESTAÑA COMPRAS ================= -->
-        <div id="tab-compras" class="tab-content gap-6 fade-in">
-            <!-- IA Shopping Header -->
-            <div class="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-3xl shadow-lg p-6 md:p-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative overflow-hidden">
-                <div class="absolute right-0 top-0 opacity-10 pointer-events-none">
-                    <svg width="200" height="200" viewBox="0 0 24 24" fill="currentColor"><path d="M16 6V4C16 2.89543 15.1046 2 14 2H10C8.89543 2 8 2.89543 8 4V6H3C2.44772 6 2 6.44772 2 7V20C2 21.1046 2.89543 22 4 22H20C21.1046 22 22 21.1046 22 20V7C22 6.44772 21.5523 6 21 6H16ZM10 4H14V6H10V4ZM4 8H20V20H4V8Z"></path></svg>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-600 mb-2">¿Cuánto pudo ahorrar TU NOVIA hoy? (USD)</label>
+                    <div class="relative">
+                        <span class="absolute left-4 top-3 text-slate-400">$</span>
+                        <input type="number" id="ahorroNovia" step="0.01" value="0" class="w-full pl-8 p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition" required>
+                    </div>
                 </div>
-                <div class="relative z-10">
-                    <h2 class="text-2xl font-extrabold flex items-center gap-2">🛒 Misión de Compras</h2>
-                    <p class="text-slate-300 text-sm mt-2 max-w-md leading-relaxed">Listas exactas de la misión. Utilizá la Inteligencia Artificial para generar frases en inglés nativo antes de entrar a las tiendas.</p>
-                </div>
-                <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto relative z-10">
-                    <button onclick="getAIShoppingPhrases('juan')" class="group flex-1 bg-orange-500 hover:bg-orange-400 text-white px-4 py-3 rounded-xl text-sm font-bold transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 flex justify-center items-center gap-2">
-                        <span>🎸</span> Frases Inglés (Hombres)
+                <div class="md:col-span-2">
+                    <button type="submit" id="btn-submit" class="w-full bg-slate-900 text-white font-bold py-4 rounded-xl hover:bg-slate-800 transition shadow-lg shadow-slate-900/20 flex justify-center items-center gap-2">
+                        <span>Sumar Aporte al Planilla</span>
+                        <i class="fa-solid fa-plus"></i>
                     </button>
-                    <button onclick="getAIShoppingPhrases('sofi')" class="group flex-1 bg-pink-500 hover:bg-pink-400 text-white px-4 py-3 rounded-xl text-sm font-bold transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 flex justify-center items-center gap-2">
-                        <span>💄</span> Frases Inglés (Mujeres)
-                    </button>
+                    <p class="text-center text-xs text-slate-400 mt-3">Los aportes hechos en el mismo mes se suman automáticamente en el historial.</p>
                 </div>
-            </div>
-            
-            <div id="ai-shopping-result" class="hidden p-6 bg-white border border-purple-100 rounded-3xl text-sm ai-response shadow-lg border-l-4 border-l-purple-500"></div>
+            </form>
+        </div>
 
-            <!-- Listas Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <!-- Checklists Personales -->
-                <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 relative group hover:border-orange-200 transition-colors">
-                    <h3 class="font-bold text-lg border-b border-slate-100 pb-3 mb-4 flex justify-between items-center">
-                        <span class="text-slate-800">🎸 Juan</span>
-                        <!-- CORRECCIÓN 1: Prefijo exacto con guion en el selector onclick para no generar conflicto con Julian -->
-                        <button onclick="limpiarListas('j')" class="opacity-0 group-hover:opacity-100 text-[10px] uppercase font-bold text-slate-400 hover:text-red-500 transition-all bg-slate-50 px-2 py-1 rounded">Reset</button>
-                    </h3>
-                    <div class="space-y-1 text-sm font-medium" id="checklist-juan">
-                        <label class="check-row flex items-start gap-3 p-2 rounded-lg cursor-pointer"><input type="checkbox" id="chk-j-1" onchange="saveChecklist()" class="mt-0.5 accent-orange-500"> <span class="select-none text-slate-700">Strymon Iridium / Nux</span></label>
-                        <label class="check-row flex items-start gap-3 p-2 rounded-lg cursor-pointer"><input type="checkbox" id="chk-j-2" onchange="saveChecklist()" class="mt-0.5 accent-orange-500"> <span class="select-none text-slate-700">Boss TR-2 / EQ / Chorus</span></label>
-                        <label class="check-row flex items-start gap-3 p-2 rounded-lg cursor-pointer"><input type="checkbox" id="chk-j-3" onchange="saveChecklist()" class="mt-0.5 accent-orange-500"> <span class="select-none text-slate-700">Focusrite Scarlett</span></label>
-                        <label class="check-row flex items-start gap-3 p-2 rounded-lg cursor-pointer"><input type="checkbox" id="chk-j-4" onchange="saveChecklist()" class="mt-0.5 accent-orange-500"> <span class="select-none text-slate-700">Herramientas (Harbor Freight)</span></label>
-                        <label class="check-row flex items-start gap-3 p-2 rounded-lg cursor-pointer"><input type="checkbox" id="chk-j-5" onchange="saveChecklist()" class="mt-0.5 accent-orange-500"> <span class="select-none text-slate-700">Visor Espejado LS2 FF806</span></label>
-                    </div>
-                </div>
-
-                <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 relative group hover:border-pink-200 transition-colors">
-                    <h3 class="font-bold text-lg border-b border-slate-100 pb-3 mb-4 flex justify-between items-center">
-                        <span class="text-pink-700">💄 Sofi</span>
-                        <button onclick="limpiarListas('s')" class="opacity-0 group-hover:opacity-100 text-[10px] uppercase font-bold text-slate-400 hover:text-red-500 transition-all bg-slate-50 px-2 py-1 rounded">Reset</button>
-                    </h3>
-                    <div class="space-y-1 text-sm font-medium" id="checklist-sofi">
-                        <label class="check-row flex items-start gap-3 p-2 rounded-lg cursor-pointer"><input type="checkbox" id="chk-s-1" onchange="saveChecklist()" class="mt-0.5 accent-pink-500"> <span class="select-none text-slate-700">Anteojos de Sol</span></label>
-                        <label class="check-row flex items-start gap-3 p-2 rounded-lg cursor-pointer"><input type="checkbox" id="chk-s-2" onchange="saveChecklist()" class="mt-0.5 accent-pink-500"> <span class="select-none text-slate-700">Termo y Vaso Stanley</span></label>
-                        <label class="check-row flex items-start gap-3 p-2 rounded-lg cursor-pointer"><input type="checkbox" id="chk-s-3" onchange="saveChecklist()" class="mt-0.5 accent-pink-500"> <span class="select-none text-slate-700">Ropa (Aventura/Outlets)</span></label>
-                        <label class="check-row flex items-start gap-3 p-2 rounded-lg cursor-pointer"><input type="checkbox" id="chk-s-4" onchange="saveChecklist()" class="mt-0.5 accent-pink-500"> <span class="select-none text-slate-700">Auriculares Inalámbricos</span></label>
-                    </div>
-                </div>
-
-                <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 relative group hover:border-purple-200 transition-colors">
-                    <h3 class="font-bold text-lg border-b border-slate-100 pb-3 mb-4 flex justify-between items-center">
-                        <span class="text-purple-700">🖨️ Lizi</span>
-                        <button onclick="limpiarListas('l')" class="opacity-0 group-hover:opacity-100 text-[10px] uppercase font-bold text-slate-400 hover:text-red-500 transition-all bg-slate-50 px-2 py-1 rounded">Reset</button>
-                    </h3>
-                    <div class="space-y-1 text-sm font-medium" id="checklist-lizi">
-                        <label class="check-row flex items-start gap-3 p-2 rounded-lg cursor-pointer"><input type="checkbox" id="chk-l-1" onchange="saveChecklist()" class="mt-0.5 accent-purple-500"> <span class="select-none text-purple-900 font-bold">Insumos 3D (Filamento/Pico)</span></label>
-                    </div>
-                </div>
-
-                <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 relative group hover:border-blue-200 transition-colors">
-                    <h3 class="font-bold text-lg border-b border-slate-100 pb-3 mb-4 flex justify-between items-center">
-                        <span class="text-blue-700">📱 Julian</span>
-                        <button onclick="limpiarListas('ju')" class="opacity-0 group-hover:opacity-100 text-[10px] uppercase font-bold text-slate-400 hover:text-red-500 transition-all bg-slate-50 px-2 py-1 rounded">Reset</button>
-                    </h3>
-                    <div class="space-y-1 text-sm font-medium" id="checklist-julian">
-                        <label class="check-row flex items-start gap-3 p-2 rounded-lg cursor-pointer"><input type="checkbox" id="chk-ju-1" onchange="saveChecklist()" class="mt-0.5 accent-blue-500"> <span class="select-none text-blue-900 font-bold">iPhone</span></label>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Tip Investigativo -->
-            <div class="bg-yellow-50 border border-yellow-200 rounded-3xl p-6 shadow-sm">
-                <h3 class="font-extrabold text-yellow-900 text-sm flex items-center gap-2 uppercase tracking-wide">
-                    <svg class="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    Tip Investigativo: Compras de Nicho
-                </h3>
-                <p class="text-sm text-yellow-800 mt-2 leading-relaxed">Algunos pedales boutique y <strong>filamentos 3D específicos</strong> a veces no tienen stock físico asegurado. Es recomendable comprar por Amazon EE.UU. 2 semanas antes del viaje y enviar todo a un <strong>Amazon Locker</strong> cercano y gratuito para asegurar la misión.</p>
-            </div>
-
-            <!-- Rankings -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-4">
-                <!-- Orlando Shopping -->
-                <div class="bg-white border border-slate-200 rounded-3xl shadow-sm overflow-hidden">
-                    <div class="bg-brand-50 border-b border-brand-100 p-5">
-                        <h3 class="font-extrabold text-brand-900 text-lg flex items-center gap-2">🏰 Ranking Compras: Orlando</h3>
-                        <p class="text-xs text-brand-600 font-medium">Desde Worldquest Resort</p>
-                    </div>
-                    <div class="p-5 space-y-6">
-                        <div>
-                            <h4 class="font-bold text-sm text-slate-800 border-b border-slate-100 pb-2 mb-3 uppercase tracking-wider">🍻 Bares (Blues & Rock)</h4>
-                            <ul class="text-xs text-slate-600 space-y-4">
-                                <li class="flex gap-3"><span class="text-xl">🥇</span><div><strong class="text-slate-900 text-sm">Tanqueray's Bar</strong> (Downtown, 30km)<br>El mejor costo/beneficio. Sótano histórico con jams de blues local.</div></li>
-                                <li class="flex gap-3"><span class="text-xl">🏆</span><div><strong class="text-slate-900 text-sm">Hard Rock Cafe</strong> (CityWalk, 18km)<br>Imprescindible. El más grande del mundo, funciona como museo.</div></li>
-                            </ul>
-                        </div>
-                        <div>
-                            <h4 class="font-bold text-sm text-slate-800 border-b border-slate-100 pb-2 mb-3 uppercase tracking-wider">🎸 Música & Motos</h4>
-                            <ul class="text-xs text-slate-600 space-y-4">
-                                <li class="flex gap-3"><span class="text-xl">🥇</span><div><strong class="text-slate-900 text-sm">Guitar Center & La Familia Pawn</strong> (OBT, 15km)<br>Para probar equipo nuevo y cazar gangas en casas de empeño en la misma ruta.</div></li>
-                                <li class="flex gap-3"><span class="text-xl">🏆</span><div><strong class="text-slate-900 text-sm">Orlando Harley & Harbor Freight</strong> (20km / 8km)<br>Fábrica histórica de Harley y paraíso de herramientas baratas.</div></li>
-                            </ul>
-                        </div>
-                        <div>
-                            <h4 class="font-bold text-sm text-slate-800 border-b border-slate-100 pb-2 mb-3 uppercase tracking-wider">💄 Moda & General</h4>
-                            <ul class="text-xs text-slate-600 space-y-4">
-                                <li class="flex gap-3"><span class="text-xl">🥇</span><div><strong class="text-slate-900 text-sm">Florida Mall & Premium Outlets</strong> (10km / 5km)<br>Dick's (Stanley), Primark (Ropa barata) y Outlets para lujo/maquillaje.</div></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Miami Shopping -->
-                <div class="bg-white border border-slate-200 rounded-3xl shadow-sm overflow-hidden">
-                    <div class="bg-teal-50 border-b border-teal-100 p-5">
-                        <h3 class="font-extrabold text-teal-900 text-lg flex items-center gap-2">🏖️ Ranking Compras: Miami</h3>
-                        <p class="text-xs text-teal-600 font-medium">Desde Sunny Isles</p>
-                    </div>
-                    <div class="p-5 space-y-6">
-                        <div>
-                            <h4 class="font-bold text-sm text-slate-800 border-b border-slate-100 pb-2 mb-3 uppercase tracking-wider">🛍️ El Gigante</h4>
-                            <ul class="text-xs text-slate-600 space-y-4">
-                                <li class="flex gap-3"><span class="text-xl">🏆</span><div><strong class="text-slate-900 text-sm">Sawgrass Mills</strong> (Sunrise, 35km)<br>IMPRESCINDIBLE. El outlet más grande de EE.UU. Resuelve todo el viaje en un día.</div></li>
-                            </ul>
-                        </div>
-                        <div>
-                            <h4 class="font-bold text-sm text-purple-800 border-b border-purple-100 pb-2 mb-3 uppercase tracking-wider">🖨️ Tecnología 3D</h4>
-                            <ul class="text-xs text-slate-600 space-y-4">
-                                <li class="flex gap-3"><span class="text-xl">🚀</span><div><strong class="text-slate-900 text-sm">Micro Center</strong> (Miami, 35km)<br>EL PARAÍSO. La mejor tienda de tecnología de EE.UU. Tienen pasillos enteros de Impresoras 3D, repuestos y paredes de filamentos.</div></li>
-                            </ul>
-                        </div>
-                        <div>
-                            <h4 class="font-bold text-sm text-slate-800 border-b border-slate-100 pb-2 mb-3 uppercase tracking-wider">🍻 Paseos & Biker</h4>
-                            <ul class="text-xs text-slate-600 space-y-4">
-                                <li class="flex gap-3"><span class="text-xl">🎸</span><div><strong class="text-slate-900 text-sm">Hollywood Broadwalk & Hard Rock</strong> (8km / 20km)<br>Música clásica gratis frente al mar y el asombroso Guitar Hotel.</div></li>
-                                <li class="flex gap-3"><span class="text-xl">🏍️</span><div><strong class="text-slate-900 text-sm">Peterson's Harley-Davidson</strong> (12km)<br>Concesionario histórico ideal para la remera de recuerdo de Miami.</div></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
+        <div class="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-slate-200">
+            <h2 class="text-xl font-bold mb-6 text-slate-800 border-b pb-4">Historial de Aportes (Agrupado por Mes)</h2>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse min-w-[600px]">
+                    <thead>
+                        <tr class="bg-slate-50 text-slate-500 text-sm border-b border-slate-200">
+                            <th class="p-4 font-semibold rounded-tl-xl">Mes y Año</th>
+                            <th class="p-4 font-semibold">Dólar (Promedio)</th>
+                            <th class="p-4 font-semibold text-blue-600">Total Vos (USD)</th>
+                            <th class="p-4 font-semibold text-purple-600">Total Novia (USD)</th>
+                            <th class="p-4 font-semibold text-right rounded-tr-xl">Acumulado del Mes</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historial-body">
+                        <tr>
+                            <td colspan="5" class="p-8 text-center text-slate-400 text-sm italic">Cargando historial...</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
-    </main>
 
-    <footer class="bg-slate-900 text-slate-400 py-8 text-center text-sm mt-auto">
-        <div class="max-w-6xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4">
-            <p class="font-medium tracking-wide">Viaje Florida 2026</p>
-            <button onclick="configurarAPI()" class="text-xs font-medium text-slate-300 bg-slate-800 border border-slate-700 px-4 py-2 rounded-full hover:bg-slate-700 hover:text-white transition-all shadow-sm">⚙️ Configurar API Key (Gemini IA)</button>
-        </div>
-    </footer>
+    </div>
 
     <script>
-        const appData = {
-            activities: [
-                { id: 1, realDate: "2026-03-17", date: "Mar 17/03", city: "Orlando", icon: "🛬", tags: ["orlando", "all"], priority: "Llegada y Check-in. 📍 Walmart/Target para provisiones.", logistics: "Walmart (3250 Vineland Rd) tiene mejores precios que Disney." },
-                { id: 2, realDate: "2026-03-18", date: "Mie 18/03", city: "Orlando", icon: "🏰", tags: ["orlando", "all"], priority: "Magic Kingdom. El más agotador.", adrenaline: "TRON, Space Mountain, Big Thunder.", shows: "Happily Ever After.", logistics: "Hacer fila virtual para TRON a las 7 AM." },
-                { id: 3, realDate: "2026-03-19", date: "Jue 19/03", city: "Orlando", icon: "🌍", tags: ["orlando", "all"], priority: "EPCOT. Comida del mundo.", adrenaline: "Guardians (Cosmic Rewind), Test Track.", shows: "Luminous.", logistics: "Reservar Guardians a las 7 AM." },
-                { id: 4, realDate: "2026-03-20", date: "Vie 20/03", city: "Orlando", icon: "🎬", tags: ["orlando", "all"], priority: "Hollywood Studios.", adrenaline: "Rock 'n' Roller, Tower of Terror, Slinky.", shows: "Fantasmic!", logistics: "Directo a Star Wars apenas abre." },
-                { id: 5, realDate: "2026-03-21", date: "Sab 21/03", city: "Orlando", icon: "🦁", tags: ["orlando", "chicas", "chicos", "all"], priority: "Animal Kingdom (Mañana) + 📍 Outlets (Tarde).", chicas: "Vineland Outlets: Sephora, Ross.", chicos: "Boot Barn + Ross (valijas).", adrenaline: "Avatar Flight of Passage, Expedition Everest.", logistics: "Avatar es prioridad #1 al entrar." },
-                { id: 6, realDate: "2026-03-22", date: "Dom 22/03", city: "Orlando", icon: "📦", tags: ["orlando", "chicas", "chicos", "all"], priority: "DÍA DE DESCANSO. 📍 Amazon Hot Bins + Disney Springs.", chicas: "Florida Mall (Stanley en Dick's).", chicos: "Best Buy + Guitar Center. Noche: Tanqueray's.", logistics: "Las Pawn Shops cierran hoy; usar locales comerciales." },
-                { id: 7, realDate: "2026-03-23", date: "Lun 23/03", city: "Orlando", icon: "🌌", tags: ["orlando", "chicas", "chicos", "all"], priority: "Epic Universe (Universal). El parque nuevo.", chicas: "T.J. Maxx (Pijamas).", chicos: "Pawn Shops (Pedales) + Old Town Kissimmee.", adrenaline: "Stardust Racers, Monsters Unchained.", logistics: "Vayan 1 hora antes; multitudes masivas." },
-                { id: 8, realDate: "2026-03-24", date: "Mar 24/03", city: "Orlando", icon: "🎢", tags: ["orlando", "all"], priority: "Islands of Adventure. Usar Express Pass.", adrenaline: "VelociCoaster, Hagrid's, Hulk.", logistics: "Hagrid's no acepta Express; hacerla primero." },
-                { id: 9, realDate: "2026-03-25", date: "Mie 25/03", city: "Orlando", icon: "🌎", tags: ["orlando", "all"], priority: "Universal Studios FL.", adrenaline: "The Mummy, Gringotts, Rip Ride Rockit.", shows: "Bourne Stuntacular.", logistics: "Usar Hogwarts Express para cruzar de parque." },
-                { id: 10, realDate: "2026-03-26", date: "Jue 26/03", city: "Orlando ➔ Miami", icon: "🚂", tags: ["orlando", "miami", "all"], priority: "Tren Brightline a Miami (Salida mediodía).", logistics: "Llegada a Sunny Isles para relax en la playa." },
-                { id: 11, realDate: "2026-03-27", date: "Vie 27/03", city: "Miami", icon: "🏖️", tags: ["miami", "chicas", "chicos", "all"], priority: "PLAN GRUPAL: 📍 MIAMI BEACH. Ocean Drive y Art Deco.", chicas: "📍 Lincoln Road (Compras).", chicos: "📍 Peterson Harley + Noche Blues.", logistics: "Miami Beach es ideal para caminar y ver el atardecer juntos." },
-                { id: 12, realDate: "2026-03-28", date: "Sab 28/03", city: "Miami", icon: "🎸", tags: ["miami", "chicas", "chicos", "all"], priority: "Miami: Compras y Relax.", chicas: "📍 Aventura Mall.", chicos: "📍 Hard Rock Hotel (Guitarra).", logistics: "Día libre. Aventura Mall está a solo 4km de Sunny Isles." },
-                { id: 13, realDate: "2026-03-29", date: "Dom 29/03", city: "Miami", icon: "🛫", tags: ["miami", "all"], priority: "Playa + Armado de valijas + Aeropuerto.", logistics: "Vuelo 22hs. Salir 4h antes por el tráfico de la I-95." }
-            ]
-        };
+        // --- CONFIGURACIÓN ---
+        // ¡REEMPLAZAR ESTA URL POR LA DE TU GOOGLE APPS SCRIPT!
+        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbylckZNYNC0pzOXz8x1eKMrntAM74NQkogqr__bT7LE8TboLtLad8uMuncnRb_u6uYl/exec'; 
+        const BASE_VOS = 647.25;
+        const BASE_NOVIA = 186.08;
+        const META_TOTAL = 20000;
+        
+        let bluePrice = 0;
+        let chartInstance = null;
 
-        /* ================= LÓGICA DE IA (GEMINI) ================= */
-        async function fetchGemini(promptText) {
-            const apiKey = localStorage.getItem('gemini_api_key_viaje');
-            if (!apiKey) return null;
-            let modelToUse = localStorage.getItem('gemini_working_model');
-            if (!modelToUse) {
-                try {
-                    const listUrl = `https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`;
-                    const res = await fetch(listUrl);
-                    if (res.ok) {
-                        const data = await res.json();
-                        const valid = data.models.filter(m => m.supportedGenerationMethods?.includes("generateContent") && m.name.includes("gemini"));
-                        const prefs = ['gemini-2.5-flash', 'gemini-1.5-flash', 'gemini-pro'];
-                        for (let p of prefs) {
-                            let found = valid.find(m => m.name.includes(p));
-                            if (found) { modelToUse = found.name.split('models/')[1]; break; }
+        async function init() {
+            await fetchDolar();
+            await fetchDataAndCalculate();
+        }
+
+        async function fetchDolar() {
+            try {
+                const res = await fetch('https://dolarapi.com/v1/dolares/blue');
+                const data = await res.json();
+                bluePrice = data.venta;
+                document.getElementById('dolar-valor').innerText = `$${bluePrice.toLocaleString('es-AR')}`;
+            } catch (e) {
+                document.getElementById('dolar-valor').innerText = "$1400 (Ref)";
+                bluePrice = 1400;
+            }
+        }
+
+        async function fetchDataAndCalculate() {
+            try {
+                const res = await fetch(WEB_APP_URL);
+                const data = await res.json();
+                
+                let totalAhorradoVos = 0;
+                let totalAhorradoNovia = 0;
+                let mesesCalendarioTranscurridos = 1; 
+
+                const agrupadoporMes = {}; 
+
+                if (data.length > 0) {
+                    // 1. Calcular cuántos meses pasaron desde el primer aporte hasta hoy
+                    const fechaPrimerAporte = new Date(data[0][0]);
+                    const fechaActual = new Date();
+                    
+                    mesesCalendarioTranscurridos = (fechaActual.getFullYear() - fechaPrimerAporte.getFullYear()) * 12 
+                                                 + fechaActual.getMonth() - fechaPrimerAporte.getMonth() + 1;
+
+                    // 2. Agrupar todas las filas (aportes) por "Mes y Año"
+                    data.forEach(fila => {
+                        const date = new Date(fila[0]);
+                        // Clave para agrupar (ej: "2026-04")
+                        const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`; 
+                        // Nombre lindo para mostrar (ej: "Abril 2026")
+                        const nombreMes = date.toLocaleDateString('es-AR', { month: 'long', year: 'numeric' });
+
+                        const ahorroVos = parseFloat(fila[3]) || 0;
+                        const ahorroNovia = parseFloat(fila[5]) || 0;
+                        const coti = parseFloat(fila[1]) || 0;
+
+                        // Si el mes no existe en nuestra lista agrupada, lo creamos
+                        if (!agrupadoporMes[key]) {
+                            agrupadoporMes[key] = { nombre: nombreMes, vos: 0, novia: 0, cotiSum: 0, cantidadAportes: 0 };
                         }
-                        if (!modelToUse && valid.length > 0) modelToUse = valid[0].name.split('models/')[1];
-                        if (modelToUse) localStorage.setItem('gemini_working_model', modelToUse);
-                    }
-                } catch(e) { console.error("Error GET:", e); }
-            }
-            const models = modelToUse ? [modelToUse, 'gemini-2.5-flash', 'gemini-1.5-flash', 'gemini-pro'].filter((v,i,a)=>a.indexOf(v)===i) : ['gemini-2.5-flash', 'gemini-1.5-flash', 'gemini-pro'];
-            const payload = { contents: [{ parts: [{ text: promptText }] }] };
-            for (let model of models) {
-                const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
-                let retries = 3, delay = 1000, modelFailed = false;
-                for (let i = 0; i < retries; i++) {
-                    try {
-                        const response = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-                        if (response.ok) {
-                            const data = await response.json();
-                            localStorage.setItem('gemini_working_model', model);
-                            return data?.candidates?.[0]?.content?.parts?.[0]?.text || null;
-                        }
-                        if (response.status === 404) {
-                            if (model === localStorage.getItem('gemini_working_model')) localStorage.removeItem('gemini_working_model');
-                            modelFailed = true; break; 
-                        }
-                        if (response.status === 400 || response.status === 403) return "Error: Tu API Key es inválida o no tiene permisos.";
-                    } catch (err) { if (i === retries - 1) console.error("Error de conexión IA:", err); }
-                    if (modelFailed) break; 
-                    await new Promise(res => setTimeout(res, delay)); delay *= 2;
-                }
-            }
-            return "Hubo un error de conexión. Verifica tu conexión a internet o la API Key.";
-        }
 
-        async function getAITips(id) {
-            const act = appData.activities.find(a => a.id === id);
-            const resDiv = document.getElementById(`ai-result-${id}`);
-            const btn = document.getElementById(`btn-ai-${id}`);
-            btn.innerHTML = "<div class='ai-spinner'></div>";
-            btn.disabled = true;
-            
-            const prompt = `Actúa como un conserje experto local VIP de Florida. Contexto: Familia argentina de vacaciones. Día: ${act.date}. Ciudad: ${act.city}. Actividad principal: "${act.priority}". Logística: "${act.logistics}". 
-            Tarea: 1. Recomienda 1 lugar muy específico para comer cerca de esta actividad. 2. Dame 1 tip "secreto" de experto (estacionamiento, horarios). Formato: Directo. Tono amistoso. Máx 4 oraciones. HTML simple (<b>, <br>). No markdown.`;
+                        // Sumamos los valores al mes correspondiente
+                        agrupadoporMes[key].vos += ahorroVos;
+                        agrupadoporMes[key].novia += ahorroNovia;
+                        agrupadoporMes[key].cotiSum += coti;
+                        agrupadoporMes[key].cantidadAportes += 1;
 
-            const result = await fetchGemini(prompt);
-            if (result && !result.includes("error de conexión") && !result.includes("Error:")) {
-                resDiv.innerHTML = `<div class="mt-4 p-5 bg-blue-50/80 backdrop-blur-sm border border-blue-100 rounded-2xl text-sm ai-response shadow-sm"><p class="font-extrabold text-blue-900 mb-2 flex items-center gap-2"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2a2 2 0 012 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 017 7h1v2h-1v2a2 2 0 01-2 2H5a2 2 0 01-2-2v-2H2v-2h1a7 7 0 017-7h1V5.73A2 2 0 0110 4a2 2 0 012-2zm-3 8a2 2 0 100 4 2 2 0 000-4zm6 0a2 2 0 100 4 2 2 0 000-4z"/></svg> Conserje IA:</p><div class="text-slate-700 leading-relaxed">${result.replace(/```html|```/g, '')}</div></div>`;
-                btn.style.display = 'none';
-            } else {
-                btn.innerHTML = "⚠️ Reintentar IA"; btn.disabled = false;
-                if(result) alert(result);
-            }
-        }
-
-        async function getAIShoppingPhrases(person) {
-            const resDiv = document.getElementById('ai-shopping-result');
-            resDiv.innerHTML = "<div class='flex items-center gap-3'><div class='ai-spinner'></div> <span class='text-slate-500 font-medium'>Generando frases nativas...</span></div>";
-            resDiv.classList.remove('hidden');
-            
-            const ctx = person === 'juan' ? "Hombre argentino comprando pedales boutique (Strymon), y accesorios moto (Harbor Freight)." : "Mujer argentina buscando insumos impresora 3D (Creality), termos Stanley en Dick's, y ropa en Aventura Mall.";
-            const prompt = `Actúa como Personal Shopper bilingüe. Contexto: ${ctx} 
-            Tarea: 1. Genera 3 frases en inglés (naturales, nativas) para que el usuario pregunte a un empleado por sus artículos específicos y pida chequear stock. 2. Traducción al español abajo. 3. Añade 1 consejo súper breve de cultura de compras en USA sobre stock oculto o clearances. Formato: HTML simple (<ul>, <li>, <b>). No markdown.`;
-
-            const res = await fetchGemini(prompt);
-            if (res) resDiv.innerHTML = `<p class="font-extrabold text-purple-900 mb-4 flex items-center gap-2"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg> Asistente de Compras Inteligente:</p><div class="text-slate-700 space-y-2 leading-relaxed">${res.replace(/```html|```/g, '')}</div>`;
-        }
-
-        /* ================= UI LOGIC ================= */
-        function switchTab(id) {
-            // SOLUCION DEFINITIVA SCROLL: Instanteo al top antes de tocar el DOM
-            window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-
-            // Estilos de botones (Pills inactivos)
-            document.querySelectorAll('.tab-btn').forEach(b => {
-                b.classList.remove('bg-slate-800', 'text-white', 'shadow-md');
-                b.classList.add('bg-white', 'text-slate-600');
-            });
-            
-            if (id === 'todo') {
-                // Mostrar todas las secciones
-                document.querySelectorAll('.tab-content').forEach(t => {
-                    t.style.display = 'flex';
-                    t.classList.add('active');
-                });
-            } else {
-                // Resetear todos los tabs a oculto
-                document.querySelectorAll('.tab-content').forEach(t => {
-                    t.style.display = 'none';
-                    t.classList.remove('active');
-                });
-                
-                // Activar solo el tab seleccionado
-                const activeTab = document.getElementById(`tab-${id}`);
-                activeTab.style.display = 'flex';
-                
-                // Forzar reflow para la animación
-                void activeTab.offsetWidth; 
-                activeTab.classList.add('active');
-            }
-            
-            // Botón activo
-            const activeBtn = document.getElementById(`btn-tab-${id}`);
-            activeBtn.classList.remove('bg-white', 'text-slate-600');
-            activeBtn.classList.add('bg-slate-800', 'text-white', 'shadow-md');
-            
-            if (id === 'itinerario' || id === 'todo') window.dispatchEvent(new Event('resize'));
-        }
-
-        function renderItinerary(f = "all") {
-            const cont = document.getElementById('itinerary-list');
-            cont.innerHTML = "";
-            appData.activities.filter(a => f === "all" || a.tags.includes(f)).forEach((a, index) => {
-                const cardWrap = document.createElement('div');
-                cardWrap.className = "relative pl-8 md:pl-12 w-full fade-in";
-                cardWrap.style.animationDelay = `${index * 0.05}s`;
-
-                // Node circular de la linea de tiempo (Solo visible en desktop para mejor UI)
-                const node = `<div class="timeline-node hidden sm:block"></div>`;
-
-                let adrHtml = (a.adrenaline || a.shows) ? `
-                    <div class="mt-4 p-3.5 bg-brand-50/50 rounded-xl border border-brand-100 text-[13px] leading-relaxed">
-                        ${a.adrenaline ? `<p class="mb-1"><span class="font-bold text-brand-800">🎢 Adrenalina:</span> <span class="text-slate-600">${a.adrenaline}</span></p>` : ''}
-                        ${a.shows ? `<p><span class="font-bold text-brand-800">✨ Show:</span> <span class="text-slate-600">${a.shows}</span></p>` : ''}
-                    </div>` : '';
-                
-                let split = (a.chicas || a.chicos) ? `
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4 text-[13px]">
-                        ${a.chicas ? `<div class="p-3 bg-pink-50/80 border border-pink-100/80 rounded-xl shadow-sm"><span class="block font-bold text-pink-800 mb-0.5">🌸 Chicas</span><span class="text-slate-600">${a.chicas}</span></div>` : ''}
-                        ${a.chicos ? `<div class="p-3 bg-orange-50/80 border border-orange-100/80 rounded-xl shadow-sm"><span class="block font-bold text-orange-800 mb-0.5">🏍️ Chicos</span><span class="text-slate-600">${a.chicos}</span></div>` : ''}
-                    </div>` : '';
-
-                cardWrap.innerHTML = `
-                    ${node}
-                    <div id="card-${a.realDate}" class="bg-white border border-slate-200 rounded-2xl p-5 md:p-6 shadow-sm hover:shadow-md transition-all group relative overflow-hidden">
-                        <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-brand-500 rounded-l-2xl"></div>
-                        
-                        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 mb-3">
-                            <h3 class="font-extrabold text-lg text-slate-900 flex items-center gap-2">
-                                <span class="bg-slate-100 p-1.5 rounded-lg text-lg shadow-sm">${a.icon}</span> ${a.date}
-                            </h3>
-                            <span class="inline-block text-[10px] font-bold bg-slate-100 text-slate-500 px-2.5 py-1 rounded-full uppercase tracking-wider self-start">${a.city}</span>
-                        </div>
-                        
-                        <p class="text-sm font-bold text-slate-800 leading-relaxed mb-1">${a.priority}</p>
-                        
-                        ${adrHtml} ${split}
-                        
-                        <div class="mt-4 flex flex-col sm:flex-row sm:items-end justify-between gap-4 pt-4 border-t border-slate-100">
-                            <p class="text-xs text-slate-500 italic leading-relaxed max-w-lg flex gap-2">
-                                <span class="text-amber-500 not-italic">💡</span> ${a.logistics}
-                            </p>
-                            <button id="btn-ai-${a.id}" onclick="getAITips(${a.id})" class="shrink-0 text-xs font-bold text-brand-600 bg-brand-50 border border-brand-200 px-3 py-2 rounded-xl shadow-sm hover:bg-brand-500 hover:text-white transition-all focus:ring-2 focus:ring-brand-300 outline-none flex items-center justify-center gap-1.5">
-                                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm0 18a8 8 0 110-16 8 8 0 010 16zm-1-5.5h2v2h-2v-2zm1-9.5a3.5 3.5 0 00-3.5 3.5h2a1.5 1.5 0 013 0c0 1.5-2 2-2 3.5v1h2v-1c0-1.5 2-2 2-3.5A3.5 3.5 0 0012 5z"/></svg> 
-                                Tips IA
-                            </button>
-                        </div>
-                        <div id="ai-result-${a.id}"></div>
-                    </div>`;
-                cont.appendChild(cardWrap);
-            });
-        }
-
-        function initCharts() {
-            Chart.defaults.font.family = "'Inter', sans-serif";
-            Chart.defaults.color = '#64748b';
-
-            new Chart(document.getElementById('activityChart'), {
-                type: 'doughnut',
-                data: { labels: ['Parques (Prioridad)', 'Compras & Outlets', 'Descanso/Paseo'], datasets: [{ data: [50, 35, 15], backgroundColor: ['#3b82f6','#f97316','#10b981'], borderWidth: 0, hoverOffset: 4 }] },
-                options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20, font: { size: 12, weight: '500' } } } } }
-            });
-            const commonScales = { x: { beginAtZero: true, grid: { color: '#f1f5f9' }, border: { dash: [4, 4] } }, y: { grid: { display: false }, ticks: { font: { weight: '500' } } } };
-            const commonPlugins = { legend: { display: false }, tooltip: { backgroundColor: 'rgba(15, 23, 42, 0.9)', padding: 10, cornerRadius: 8, callbacks: { label: function(c) { return ' ' + c.raw + ' km'; } } } };
-
-            new Chart(document.getElementById('orlandoDistancesChart'), {
-                type: 'bar', data: { labels: ['Outlets','Walmart','H.Studios','Epcot','Florida Mall','M. Kingdom','G. Center','Universal','Epic Univ','Orlando Harley'], datasets: [{ data: [5, 5.5, 7.1, 8.2, 10, 12.5, 15, 18, 19.5, 20], backgroundColor: '#3b82f6', borderRadius: 6, barThickness: 'flex' }] },
-                options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, scales: commonScales, plugins: commonPlugins }
-            });
-            new Chart(document.getElementById('miamiDistancesChart'), {
-                type: 'bar', data: { labels: ['Aventura Mall','Gulfstream','Hollywood Broadwalk','Peterson Harley','Hard Rock','MIA Airport','Sawgrass Mills', 'Micro Center (3D)'], datasets: [{ data: [4, 5.5, 8.5, 12, 20, 31, 35, 35], backgroundColor: '#0ea5e9', borderRadius: 6, barThickness: 'flex' }] },
-                options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, scales: commonScales, plugins: commonPlugins }
-            });
-        }
-
-        function initTimeBanner() {
-            const banner = document.getElementById('dynamic-time-banner');
-            const now = new Date(); now.setHours(0,0,0,0);
-            const start = new Date("2026-03-17T00:00:00");
-            const end = new Date("2026-03-29T00:00:00");
-            banner.classList.remove('hidden');
-            
-            if (now < start) {
-                const diff = Math.ceil((start - now) / (86400000));
-                banner.classList.remove('text-white');
-                banner.classList.add('text-slate-900');
-                banner.innerText = `⏳ ¡Faltan ${diff} días para el viaje! Preparen las valijas.`;
-            } else if (now >= start && now <= end) {
-                // CORRECCIÓN 2: Prevención del error de Zona Horaria que mostraba el día anterior en zonas UTC positivas
-                const year = now.getFullYear();
-                const month = String(now.getMonth() + 1).padStart(2, '0');
-                const day = String(now.getDate()).padStart(2, '0');
-                const isoLocal = `${year}-${month}-${day}`;
-                
-                banner.innerHTML = `<button onclick="scrollToToday('${isoLocal}')" class="font-bold underline w-full py-1 hover:text-slate-100 transition-colors">📍 Tocar para ver itinerario de HOY</button>`;
-            } else {
-                banner.classList.add('hidden');
-            }
-        }
-
-        function scrollToToday(d) {
-            switchTab('itinerario');
-            setTimeout(() => {
-                const el = document.getElementById(`card-${d}`);
-                if (el) {
-                    const y = el.getBoundingClientRect().top + window.scrollY - 100;
-                    window.scrollTo({top: y, behavior: 'smooth'});
-                    el.classList.add('ring-4', 'ring-brand-400', 'ring-offset-2');
-                    setTimeout(() => el.classList.remove('ring-4', 'ring-brand-400', 'ring-offset-2'), 2500);
-                }
-            }, 300);
-        }
-
-        /* ================= STORAGE ================= */
-        function saveChecklist() {
-            const data = {};
-            document.querySelectorAll('input[type="checkbox"]').forEach(c => { if(c.id) data[c.id] = c.checked; });
-            localStorage.setItem('floridaTripChecklist', JSON.stringify(data));
-        }
-
-        function loadChecklist() {
-            const saved = JSON.parse(localStorage.getItem('floridaTripChecklist') || '{}');
-            for(const id in saved) { const el = document.getElementById(id); if(el) el.checked = saved[id]; }
-        }
-
-        function limpiarListas(prefix) {
-            // CORRECCIÓN 1: Adición del "-" garantizando precisión al buscar el id
-            document.querySelectorAll(`input[id^="chk-${prefix}-"]`).forEach(c => c.checked = false);
-            saveChecklist();
-        }
-
-        function configurarAPI() {
-            const k = prompt("Gemini API Key:", localStorage.getItem('gemini_api_key_viaje') || "");
-            if (k !== null) {
-                localStorage.removeItem('gemini_working_model');
-                if(k.trim() === "") localStorage.removeItem('gemini_api_key_viaje');
-                else localStorage.setItem('gemini_api_key_viaje', k.trim());
-                location.reload();
-            }
-        }
-
-        window.onload = () => {
-            renderItinerary();
-            initCharts();
-            initTimeBanner();
-            loadChecklist();
-            
-            // Filtros interactivos
-            document.querySelectorAll('.filter-btn').forEach(b => {
-                b.onclick = (e) => {
-                    document.querySelectorAll('.filter-btn').forEach(x => {
-                        x.classList.remove('bg-white', 'shadow-sm', 'text-slate-800');
-                        x.classList.add('text-slate-500');
+                        // Sumamos al total histórico general
+                        totalAhorradoVos += ahorroVos;
+                        totalAhorradoNovia += ahorroNovia;
                     });
-                    e.target.classList.remove('text-slate-500');
-                    e.target.classList.add('bg-white', 'shadow-sm', 'text-slate-800');
-                    renderItinerary(e.target.dataset.filter);
-                };
+                }
+
+                // 3. Renderizar Historial Agrupado
+                const historialBody = document.getElementById('historial-body');
+                historialBody.innerHTML = ''; 
+
+                const mesesKeys = Object.keys(agrupadoporMes);
+                if (mesesKeys.length === 0) {
+                    historialBody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-400 text-sm italic">Aún no hay registros. ¡Cargá el primer aporte!</td></tr>`;
+                } else {
+                    // Ordenamos de más nuevo a más viejo
+                    mesesKeys.sort().reverse().forEach(key => {
+                        const mesData = agrupadoporMes[key];
+                        const totalMes = mesData.vos + mesData.novia;
+                        const cotiPromedio = mesData.cotiSum / mesData.cantidadAportes;
+
+                        const tr = document.createElement('tr');
+                        tr.className = 'border-b border-slate-100 hover:bg-slate-50 transition';
+                        tr.innerHTML = `
+                            <td class="p-4 text-sm font-semibold text-slate-700 capitalize">
+                                ${mesData.nombre} <span class="text-xs font-normal text-slate-400 ml-2">(${mesData.cantidadAportes} aportes)</span>
+                            </td>
+                            <td class="p-4 text-sm text-slate-500">$${cotiPromedio.toLocaleString('es-AR', {maximumFractionDigits: 0})}</td>
+                            <td class="p-4 text-sm font-bold text-blue-600">${mesData.vos.toFixed(2)}</td>
+                            <td class="p-4 text-sm font-bold text-purple-600">${mesData.novia.toFixed(2)}</td>
+                            <td class="p-4 text-sm font-black text-slate-700 text-right">${totalMes.toFixed(2)} USD</td>
+                        `;
+                        historialBody.appendChild(tr);
+                    });
+                }
+
+                // 4. Lógica de Deuda / Superávit (Basado en meses calendario reales)
+                let deudaVos = (mesesCalendarioTranscurridos * BASE_VOS) - totalAhorradoVos;
+                let deudaNovia = (mesesCalendarioTranscurridos * BASE_NOVIA) - totalAhorradoNovia;
+
+                let metaEsteMesVos = BASE_VOS + deudaVos;
+                let metaEsteMesNovia = BASE_NOVIA + deudaNovia;
+
+                // Actualizar UI - Vos
+                document.getElementById('meta-vos').innerText = `${metaEsteMesVos.toFixed(2)} USD`;
+                document.getElementById('ars-vos').innerText = `Equivale a ~$${(metaEsteMesVos * bluePrice).toLocaleString('es-AR', {maximumFractionDigits: 0})} ARS`;
+                updateEstado('estado-vos', deudaVos, 'bg-red-100 text-red-700', 'bg-emerald-100 text-emerald-700');
+
+                // Actualizar UI - Novia
+                document.getElementById('meta-novia').innerText = `${metaEsteMesNovia.toFixed(2)} USD`;
+                document.getElementById('ars-novia').innerText = `Equivale a ~$${(metaEsteMesNovia * bluePrice).toLocaleString('es-AR', {maximumFractionDigits: 0})} ARS`;
+                updateEstado('estado-novia', deudaNovia, 'bg-red-100 text-red-700', 'bg-emerald-100 text-emerald-700');
+
+                // Actualizar Gráfico
+                let totalAcumulado = totalAhorradoVos + totalAhorradoNovia;
+                document.getElementById('progreso-texto').innerText = `${totalAcumulado.toFixed(0)} / 20.000`;
+                renderChart(totalAhorradoVos, totalAhorradoNovia, META_TOTAL - totalAcumulado);
+
+            } catch (error) {
+                console.error("Error", error);
+                document.getElementById('historial-body').innerHTML = `<tr><td colspan="5" class="p-8 text-center text-red-400">Error al cargar datos</td></tr>`;
+            }
+        }
+
+        function updateEstado(elementId, deuda, classDeuda, classSuperavit) {
+            const el = document.getElementById(elementId);
+            el.className = "text-xs font-semibold px-3 py-1 rounded-full inline-block mt-2 ";
+            if (deuda > 1) {
+                el.innerText = `Falta para estar al día: -$${deuda.toFixed(2)} USD`;
+                el.className += classDeuda;
+            } else if (deuda < -1) {
+                el.innerText = `Adelanto a favor: +$${Math.abs(deuda).toFixed(2)} USD`;
+                el.className += classSuperavit;
+            } else {
+                el.innerText = "Al día con las metas 🎯";
+                el.className += "bg-blue-100 text-blue-700";
+            }
+        }
+
+        function renderChart(vos, novia, faltante) {
+            const ctx = document.getElementById('progressChart').getContext('2d');
+            if (chartInstance) chartInstance.destroy();
+
+            chartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Vos', 'Novia', 'Faltante'],
+                    datasets: [{
+                        data: [vos, novia, faltante > 0 ? faltante : 0],
+                        backgroundColor: ['#3b82f6', '#a855f7', '#1e293b'],
+                        borderWidth: 0,
+                        cutout: '75%'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } }
+                }
             });
+        }
+
+        document.getElementById('ahorro-form').onsubmit = async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btn-submit');
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Guardando...';
+            btn.disabled = true;
+
+            const payload = {
+                cotizacion: bluePrice,
+                metaVos: BASE_VOS,
+                ahorroVos: document.getElementById('ahorroVos').value,
+                metaNovia: BASE_NOVIA,
+                ahorroNovia: document.getElementById('ahorroNovia').value,
+                comentarios: ""
+            };
+
+            await fetch(WEB_APP_URL, {
+                method: 'POST',
+                body: JSON.stringify(payload)
+            });
+            
+            // Si el guardado fue exitoso:
+            document.getElementById('ahorroVos').value = 0;
+            document.getElementById('ahorroNovia').value = 0;
+            btn.innerHTML = '<span>Sumar Aporte al Planilla</span><i class="fa-solid fa-plus"></i>';
+            btn.disabled = false;
+            
+            init(); // Recargar datos sin refrescar la página
         };
+
+        init();
     </script>
 </body>
 </html>
